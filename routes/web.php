@@ -89,7 +89,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // Rutas de proyectos
-    Route::group(['prefix' => 'projects'], function() {
+    Route::group(['prefix' => 'projects'], function () {
         Route::resource('/', ProjectController::class);
         Route::post('/{project}/approve', [ProjectController::class, 'approve'])->name('projects.approve');
         Route::post('/{project}/reject', [ProjectController::class, 'reject'])->name('projects.reject');
@@ -105,4 +105,16 @@ Route::middleware('auth')->group(function () {
     // HubSpot webhook
     Route::post('/hubspot-webhook', [HubSpotWebhookController::class, 'handleWebhook'])->name('hubspot.webhook');
 
+    // Rutas adicionales para About, Services y Contact
+    Route::get('/about', function () {
+        return view('about');
+    })->name('about');
+
+    Route::get('/services', function () {
+        return view('services');
+    })->name('services');
+
+    Route::get('/contact', function () {
+        return view('contact');
+    })->name('contact');
 });
