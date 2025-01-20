@@ -4,17 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\Stage;
 use App\Models\Project;
+use App\Models\Document;
 use Illuminate\Http\Request;
 
 class StageController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth');
-        $this->middleware('permission:crear etapas')->only(['create', 'store']);
-        $this->middleware('permission:editar etapas')->only(['edit', 'update']);
-        $this->middleware('permission:ver etapas')->only(['show']);
-        // ... otros permisos para StageController
+        $this->middleware('auth'); // Aplicar el middleware 'auth' a todos los métodos
     }
 
     public function create(Project $project)

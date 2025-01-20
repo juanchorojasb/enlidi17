@@ -27,21 +27,6 @@
 <section id="about" class="home-services pt-lg-0">
     <div class="container">
         <div class="row">
-            <div class="col-lg-6 col-md-6 col-sm-12">
-                <div class="box-wrap">
-                    <div class="box-wrap-grid">
-                        <div class="icon">
-                            <span class="fa fa-calculator"></span>
-                        </div>
-                        <div class="info">
-                            <h4><a href="#calculator">Calculadora de Financiamiento</a></h4>
-                            <p class="mt-4">Estima los costos y cuotas de tus proyectos energéticos.</p>
-                            <a class="btn btn-style btn-primary mt-sm-5 mt-4 mr-2" href="{{ route('calculator') }}">Acceder a la Calculadora</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
             <div class="col-lg-6 col-md-6 col-sm-12 mt-lg-0 mt-4">
                 <div class="box-wrap">
                     <div class="box-wrap-grid">

@@ -28,7 +28,15 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        // Establecer la variable de sesión que indica que el usuario está logueado
+        $request->session()->put('user_logged_in', true);
+
+        // Redirigir al usuario al dashboard correcto según su rol
+        if (Auth::user()->hasRole('admin')) {
+            return redirect()->intended(route('admin.dashboard'));
+        }
+
+        return redirect()->intended(route('user.dashboard'));
     }
 
     /**
@@ -37,6 +45,9 @@ class AuthenticatedSessionController extends Controller
     public function destroy(Request $request): RedirectResponse
     {
         Auth::guard('web')->logout();
+
+        // Eliminar la variable de sesión
+        $request->session()->forget('user_logged_in');
 
         $request->session()->invalidate();
 

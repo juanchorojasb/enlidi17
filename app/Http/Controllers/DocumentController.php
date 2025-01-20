@@ -12,17 +12,12 @@ class DocumentController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-
-        // Define permisos para cada acción
-        $this->middleware('permission:crear documentos')->only(['create', 'store']);
-        $this->middleware('permission:editar documentos')->only(['edit', 'update']);
-        $this->middleware('permission:eliminar documentos')->only(['destroy']);
-        $this->middleware('permission:ver documentos')->only(['show', 'download']); 
+        // Se eliminan los middlewares de permiso en el constructor
     }
 
-    public function create(Stage $stage) 
+    public function create(Stage $stage)
     {
-        return view('documents.create', compact('stage')); 
+        return view('documents.create', compact('stage'));
     }
 
     public function store(Request $request, Stage $stage)
@@ -38,9 +33,9 @@ class DocumentController extends Controller
 
         // Guardar el archivo usando el Storage de Laravel
         $path = $request->file('file')->storeAs(
-            'documents/' . $stage->project->id . '/' . $stage->id, 
-            $originalFileName, 
-            'public' 
+            'documents/' . $stage->project->id . '/' . $stage->id,
+            $originalFileName,
+            'public'
         );
 
         // Crear el documento
@@ -50,7 +45,7 @@ class DocumentController extends Controller
         ]);
 
         // Redireccionar a la vista de la etapa
-        return redirect()->route('stages.show', $stage)->with('success', 'Documento subido correctamente.'); 
+        return redirect()->route('stages.show', $stage)->with('success', 'Documento subido correctamente.');
     }
 
     public function show(Document $document)
@@ -60,7 +55,7 @@ class DocumentController extends Controller
 
     public function edit(Document $document)
     {
-        return view('documents.edit', compact('document')); 
+        return view('documents.edit', compact('document'));
     }
 
     public function update(Request $request, Document $document)

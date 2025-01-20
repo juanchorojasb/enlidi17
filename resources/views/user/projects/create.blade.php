@@ -3,12 +3,12 @@
 @section('content')
 <div class="container">
     <h1 class="mb-4">Crear Nuevo Proyecto</h1>
-    
+
     <form action="{{ route('projects.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
 
         <h2 class="mb-3">Etapa 1: Financiación</h2>
-        
+
         <div class="form-group">
             <label for="client_name">Nombre del Cliente</label>
             <input type="text" name="client_name" id="client_name" class="form-control" value="{{ old('client_name') }}" required>

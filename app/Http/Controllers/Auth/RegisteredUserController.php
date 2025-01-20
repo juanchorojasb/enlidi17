@@ -41,10 +41,14 @@ class RegisteredUserController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
+        // Asignar el rol de usuario por defecto
+        $user->assignRole('user');
+
         event(new Registered($user));
 
         Auth::login($user);
 
-        return redirect(route('dashboard', absolute: false));
+        // Redirigir al dashboard del usuario
+        return redirect()->route('user.dashboard');
     }
 }
