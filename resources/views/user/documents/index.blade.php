@@ -1,44 +1,49 @@
 @extends('layouts.user')
 
 @section('content')
-<section id="registered-documents" class="home-services pt-lg-0">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="box-wrap">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <h4>Documentos</h4>
-                        <a href="{{ route('stages.documents.create', $stage) }}" class="btn btn-primary">Subir nuevo documento</a> 
-                    </div>
-                    <div class="table-responsive mt-4">
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>Nombre</th>
-                                    <th>Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($documents as $document)
-                                <tr>
-                                    <td>{{ $document->name }}</td>
-                                    <td>
-                                        <a href="{{ route('documents.show', $document) }}" class="btn btn-primary btn-sm">Ver</a>
-                                        <a href="{{ route('documents.edit', $document) }}" class="btn btn-warning btn-sm">Editar</a>
-                                        <form action="{{ route('documents.destroy', $document) }}" method="POST" class="d-inline-block">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de que quieres eliminar este documento?')">Eliminar</button>
-                                        </form>
-                                    </td>
-                                </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
+<div class="container mx-auto p-4">
+    <h1 class="text-2xl font-bold mb-4">Mis Documentos</h1>
+
+    @if($documents->isEmpty())
+        <div class="bg-blue-100 border-t border-b border-blue-500 text-blue-700 px-4 py-3" role="alert">
+            <p class="font-bold">Información</p>
+            <p class="text-sm">No has subido ningún documento aún.</p>
         </div>
+    @else
+        <div class="overflow-x-auto">
+            <table class="table-auto w-full">
+                <thead>
+                    <tr>
+                        <th class="px-4 py-2">Nombre</th>
+                        <th class="px-4 py-2">Proyecto</th>
+                        <th class="px-4 py-2">Fecha de Creación</th>
+                        <th class="px-4 py-2">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($documents as $document)
+                        <tr>
+                            <td class="border px-4 py-2">{{ $document->name }}</td>
+                            <td class="border px-4 py-2">{{ $document->project->name }}</td>
+                            <td class="border px-4 py-2">{{ $document->created_at->format('d/m/Y H:i:s') }}</td>
+                            <td class="border px-4 py-2">
+                                <a href="{{ route('documents.show', $document) }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Ver</a>
+                                <a href="{{ route('documents.edit', $document) }}" class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded">Editar</a>
+                                <form action="{{ route('documents.destroy', $document) }}" method="POST" class="inline">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" onclick="return confirm('¿Estás seguro de que quieres eliminar este documento?')">Eliminar</button>
+                                </form>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    @endif
+
+    <div class="mt-4">
+        <a href="{{ route('documents.create') }}" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">Subir Nuevo Documento</a>
     </div>
-</section>
+</div>
 @endsection
