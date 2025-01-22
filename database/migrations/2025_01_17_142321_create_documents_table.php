@@ -13,9 +13,12 @@ return new class extends Migration
     {
         Schema::create('documents', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('path');
-            $table->foreignId('stage_id')->constrained()->onDelete('cascade');
+            $table->string('name'); // Nombre del documento
+            $table->string('path'); // Ruta del archivo
+            $table->string('mime_type')->nullable(); // Tipo MIME del archivo
+            $table->bigInteger('size')->nullable(); // Tamaño del archivo en bytes
+            $table->foreignId('project_id')->constrained()->onDelete('cascade'); // Relación con proyectos
+            $table->foreignId('stage_id')->nullable()->constrained()->onDelete('cascade'); // Relación con etapas (opcional)
             $table->timestamps();
         });
     }

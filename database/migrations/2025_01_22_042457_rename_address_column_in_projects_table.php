@@ -9,18 +9,23 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up()
+    public function up(): void
 {
     Schema::table('projects', function (Blueprint $table) {
-        $table->renameColumn('address', 'installation_address');
+        if (Schema::hasColumn('projects', 'address')) {
+            $table->renameColumn('address', 'installation_address');
+        }
     });
 }
 
-public function down()
+public function down(): void
 {
     Schema::table('projects', function (Blueprint $table) {
-        $table->renameColumn('installation_address', 'address');
+        if (Schema::hasColumn('projects', 'installation_address')) {
+            $table->renameColumn('installation_address', 'address');
+        }
     });
 }
+
 
 };

@@ -56,46 +56,48 @@ class AddMissingColumnsToTables extends Migration
         });
     }
 
-    public function down()
+    public function down(): void
     {
-        // Invierte los cambios (si lo deseas).
         Schema::table('projects', function (Blueprint $table) {
-            if (Schema::hasColumn('projects', 'user_id')) {
-                $table->dropForeign(['user_id']);
-                $table->dropColumn('user_id');
+            if (Schema::hasColumn('projects', 'client_name')) {
+                $table->dropColumn('client_name');
             }
-        });
-
-        Schema::table('documents', function (Blueprint $table) {
-            if (Schema::hasColumn('documents', 'project_id')) {
-                $table->dropForeign(['project_id']);
-                $table->dropColumn('project_id');
+            if (Schema::hasColumn('projects', 'address')) {
+                $table->dropColumn('address');
             }
-            if (Schema::hasColumn('documents', 'name')) {
-                $table->dropColumn('name');
+            if (Schema::hasColumn('projects', 'project_description')) {
+                $table->dropColumn('project_description');
             }
-            if (Schema::hasColumn('documents', 'file_path')) {
-                $table->dropColumn('file_path');
+            if (Schema::hasColumn('projects', 'project_value')) {
+                $table->dropColumn('project_value');
             }
-            if (Schema::hasColumn('documents', 'mime_type')) {
-                $table->dropColumn('mime_type');
+            if (Schema::hasColumn('projects', 'start_date')) {
+                $table->dropColumn('start_date');
             }
-            if (Schema::hasColumn('documents', 'size')) {
-                $table->dropColumn('size');
+            if (Schema::hasColumn('projects', 'rut_path')) {
+                $table->dropColumn('rut_path');
             }
-        });
-
-        Schema::table('stages', function (Blueprint $table) {
-            if (Schema::hasColumn('stages', 'project_id')) {
-                $table->dropForeign(['project_id']);
-                $table->dropColumn('project_id');
+            if (Schema::hasColumn('projects', 'chamber_of_commerce_path')) {
+                $table->dropColumn('chamber_of_commerce_path');
             }
-            if (Schema::hasColumn('stages', 'name')) {
-                $table->dropColumn('name');
+            if (Schema::hasColumn('projects', 'financial_statements_path')) {
+                $table->dropColumn('financial_statements_path');
             }
-            if (Schema::hasColumn('stages', 'status')) {
-                $table->dropColumn('status');
+            if (Schema::hasColumn('projects', 'legal_representative_id_path')) {
+                $table->dropColumn('legal_representative_id_path');
+            }
+            if (Schema::hasColumn('projects', 'credit_request_path')) {
+                $table->dropColumn('credit_request_path');
+            }
+            if (Schema::hasColumn('projects', 'project_information_path')) {
+                $table->dropColumn('project_information_path');
+            }
+            if (Schema::hasColumn('projects', 'approval_query_path')) {
+                $table->dropColumn('approval_query_path');
             }
         });
     }
+    
+    
+
 }
