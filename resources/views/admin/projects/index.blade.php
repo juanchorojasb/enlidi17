@@ -8,7 +8,9 @@
                 <div class="box-wrap">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h4 class="mb-0">Proyectos Registrados</h4>
-                        {{-- <a href="{{ route('admin.projects.create') }}" class="btn btn-primary">Nuevo Proyecto</a> --}}
+                        {{--  No se necesita el botón para crear proyectos ya que el administrador no crea proyectos
+                        <a href="{{ route('admin.projects.create') }}" class="btn btn-primary">Nuevo Proyecto</a>
+                        --}}
                     </div>
 
                     @if($projects->count() > 0)
@@ -42,7 +44,6 @@
                                             </td>
                                             <td>
                                                 <a href="{{ route('admin.projects.show', $project->id) }}" class="btn btn-primary btn-sm">Ver</a>
-                                                <a href="{{ route('admin.projects.edit', $project->id) }}" class="btn btn-warning btn-sm">Editar</a>
 
                                                 {{-- Botones de aprobar/rechazar --}}
                                                 @if ($project->status !== 'aprobado')
