@@ -10,17 +10,15 @@ class Document extends Model
     use HasFactory;
 
     /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
+     * Campos asignables por asignación masiva.
      */
     protected $fillable = [
         'name',
-        'project_id',    // Relación con el proyecto
-        'stage_id',      // Relación con la etapa
-        'path',          // Ruta del archivo
-        'mime_type',     // Tipo MIME del archivo
-        'size',          // Tamaño del archivo en bytes
+        'project_id',
+        'stage_id',
+        'path',
+        'mime_type',
+        'size',
     ];
 
     /**
@@ -32,7 +30,7 @@ class Document extends Model
     }
 
     /**
-     * Relación con el modelo Stage (etapa).
+     * Relación con el modelo Stage (etapa), opcional si lo usas.
      */
     public function stage()
     {

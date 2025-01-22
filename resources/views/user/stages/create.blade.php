@@ -4,6 +4,10 @@
 <div class="container">
     <h1 class="mb-4">Crear Nueva Etapa</h1>
 
+    @if(session('success'))
+        <div class="alert alert-success">{{ session('success') }}</div>
+    @endif
+
     <form action="{{ route('stages.store') }}" method="POST">
         @csrf
 
@@ -22,7 +26,9 @@
 
         <div class="form-group mb-3">
             <label for="name">Nombre de la Etapa</label>
-            <input type="text" name="name" id="name" class="form-control" required value="{{ old('name') }}">
+            <input type="text" name="name" id="name" 
+                   class="form-control" required 
+                   value="{{ old('name') }}">
             @error('name')
                 <div class="text-danger">{{ $message }}</div>
             @enderror
@@ -41,6 +47,7 @@
         </div>
 
         <button type="submit" class="btn btn-primary">Crear Etapa</button>
+        <a href="{{ route('stages.index') }}" class="btn btn-secondary">Cancelar</a>
     </form>
 </div>
 @endsection

@@ -9,15 +9,10 @@ class Stage extends Model
 {
     use HasFactory;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
     protected $fillable = [
         'name',
         'project_id',
-        'status', // Puede ser "pending", "in_progress", "completed", etc.
+        'status',  // Por ejemplo: 'En revisión', 'Pendiente', 'Aprobado'...
     ];
 
     /**
@@ -29,7 +24,7 @@ class Stage extends Model
     }
 
     /**
-     * Relación: Una etapa tiene muchos documentos.
+     * Relación: Una etapa tiene muchos documentos (si en `documents` hay un `stage_id`).
      */
     public function documents()
     {
@@ -37,7 +32,7 @@ class Stage extends Model
     }
 
     /**
-     * Scope para buscar etapas por estado.
+     * Scope para filtrar por estado, p.ej. Stage::status('Aprobado')->get();
      */
     public function scopeStatus($query, $status)
     {
@@ -45,7 +40,7 @@ class Stage extends Model
     }
 
     /**
-     * Scope para buscar etapas por proyecto.
+     * Scope para filtrar por ID de proyecto, p.ej. Stage::ofProject(1)->get();
      */
     public function scopeOfProject($query, $projectId)
     {
@@ -53,7 +48,7 @@ class Stage extends Model
     }
 
     /**
-     * Método para verificar si la etapa está completada.
+     * Ejemplo de helper: verificar si la etapa está completada.
      */
     public function isCompleted()
     {
