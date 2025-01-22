@@ -16,10 +16,24 @@ class Document extends Model
      */
     protected $fillable = [
         'name',
-        'stage_id',
-        'path',
+        'project_id',    // Relación con el proyecto
+        'stage_id',      // Relación con la etapa
+        'path',          // Ruta del archivo
+        'mime_type',     // Tipo MIME del archivo
+        'size',          // Tamaño del archivo en bytes
     ];
 
+    /**
+     * Relación con el modelo Project (proyecto).
+     */
+    public function project()
+    {
+        return $this->belongsTo(Project::class);
+    }
+
+    /**
+     * Relación con el modelo Stage (etapa).
+     */
     public function stage()
     {
         return $this->belongsTo(Stage::class);

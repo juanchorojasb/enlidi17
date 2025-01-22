@@ -21,15 +21,18 @@ class DocumentController extends Controller
             abort(403, 'No tienes permiso para ver este documento.');
         }
 
-        $path = storage_path('app/public/' . $document->file_path);
+        // Obtener la ruta completa del archivo
+        $path = storage_path('app/public/' . $document->path); // Usar 'path' en lugar de 'file_path'
 
+        // Verificar si el archivo existe
         if (!file_exists($path)) {
             abort(404, 'El documento no existe.');
         }
 
+        // Devolver el archivo con las cabeceras apropiadas
         return response()->file($path, [
             'Content-Type' => $document->mime_type,
-            'Content-Disposition' => 'inline; filename="' . $document->name . '"', // Usa el nombre del documento
+            'Content-Disposition' => 'inline; filename="' . $document->name . '"',
         ]);
     }
 }

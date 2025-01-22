@@ -33,7 +33,7 @@ class Project extends Model
         'credit_request_path',
         'project_information_path',
         'approval_query_path',
-        'status',
+        'status', // Puede ser 'pending', 'approved', 'rejected', etc.
     ];
 
     /**
@@ -45,7 +45,7 @@ class Project extends Model
     }
 
     /**
-     * Define la relación: Un proyecto tiene muchas etapas.
+     * Define la relación: Un proyecto tiene muchas etapas (stages).
      */
     public function stages()
     {
@@ -58,5 +58,37 @@ class Project extends Model
     public function documents()
     {
         return $this->hasMany(Document::class);
+    }
+
+    /**
+     * Define un accesor para obtener la URL del archivo RUT.
+     */
+    public function getRutUrlAttribute()
+    {
+        return $this->rut_path ? asset('storage/' . $this->rut_path) : null;
+    }
+
+    /**
+     * Define un accesor para obtener la URL del archivo de Cámara de Comercio.
+     */
+    public function getChamberOfCommerceUrlAttribute()
+    {
+        return $this->chamber_of_commerce_path ? asset('storage/' . $this->chamber_of_commerce_path) : null;
+    }
+
+    /**
+     * Scope para buscar proyectos por estado.
+     */
+    public function scopeStatus($query, $status)
+    {
+        return $query->where('status', $status);
+    }
+
+    /**
+     * Scope para buscar proyectos de un usuario específico.
+     */
+    public function scopeOfUser($query, $userId)
+    {
+        return $query->where('user_id', $userId);
     }
 }
