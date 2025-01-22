@@ -22,7 +22,7 @@ class Project extends Model
         'email',
         'phone',
         'city',
-        'address',
+        'installation_address',
         'project_description',
         'project_value',
         'start_date',

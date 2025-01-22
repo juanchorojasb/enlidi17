@@ -2,74 +2,107 @@
 
 @section('content')
 <div class="container">
-    <h1 class="mb-4">Crear Nuevo Proyecto</h1>
-    
-    <form action="{{ route('projects.store') }}" method="POST" enctype="multipart/form-data">
-        @csrf
+    <h1>Detalles del Proyecto</h1>
 
-        <h2 class="mb-3">Etapa 1: Financiación</h2>
+    {{-- Datos básicos del proyecto --}}
+    <div class="mb-4">
+        <h3>Información del Proyecto</h3>
+        <p><strong>Nombre del Cliente:</strong> {{ $project->client_name }}</p>
+        <p><strong>Ciudad/Municipio:</strong> {{ $project->city }}</p>
+        <p><strong>Departamento:</strong> {{ $project->department }}</p>
+        <p><strong>País:</strong> {{ $project->country }}</p>
+        <p><strong>Dirección de Instalación:</strong> {{ $project->installation_address }}</p>
+        <p><strong>Estado del Proyecto:</strong> {{ $project->status }}</p>
+        {{-- Agrega todos los campos que desees mostrar --}}
+    </div>
+
+    {{-- Documentos principales (columnas en la tabla projects) --}}
+    <div class="mb-4">
+        <h3>Documentos Principales</h3>
         
-        <div class="form-group">
-            <label for="client_name">Nombre del Cliente</label>
-            <input type="text" name="client_name" id="client_name" class="form-control" value="{{ old('client_name') }}" required>
-        </div>
+        <p>
+            <strong>RUT:</strong><br>
+            @if($project->rut_path)
+                <a href="{{ Storage::url($project->rut_path) }}" target="_blank">Ver RUT</a>
+            @else
+                No adjuntado
+            @endif
+        </p>
 
-        <div class="form-group">
-            <label for="city">Ciudad/Municipio</label>
-            <input type="text" name="city" id="city" class="form-control" value="{{ old('city') }}" required>
-        </div>
+        <p>
+            <strong>Cámara de Comercio:</strong><br>
+            @if($project->chamber_of_commerce_path)
+                <a href="{{ Storage::url($project->chamber_of_commerce_path) }}" target="_blank">Ver Cámara de Comercio</a>
+            @else
+                No adjuntado
+            @endif
+        </p>
 
-        <div class="form-group">
-            <label for="department">Departamento</label>
-            <input type="text" name="department" id="department" class="form-control" value="{{ old('department') }}" required>
-        </div>
+        <p>
+            <strong>Estados Financieros:</strong><br>
+            @if($project->financial_statements_path)
+                <a href="{{ Storage::url($project->financial_statements_path) }}" target="_blank">Ver Estados Financieros</a>
+            @else
+                No adjuntado
+            @endif
+        </p>
 
-        <div class="form-group">
-            <label for="country">País</label>
-            <input type="text" name="country" id="country" class="form-control" value="{{ old('country') }}" required>
-        </div>
+        <p>
+            <strong>Cédula Rep. Legal:</strong><br>
+            @if($project->legal_representative_id_path)
+                <a href="{{ Storage::url($project->legal_representative_id_path) }}" target="_blank">Ver Cédula</a>
+            @else
+                No adjuntado
+            @endif
+        </p>
 
-        <div class="form-group">
-            <label for="installation_address">Dirección de Instalación</label>
-            <input type="text" name="installation_address" id="installation_address" class="form-control" value="{{ old('installation_address') }}" required>
-        </div>
+        <p>
+            <strong>Solicitud de Crédito:</strong><br>
+            @if($project->credit_request_path)
+                <a href="{{ Storage::url($project->credit_request_path) }}" target="_blank">Ver Solicitud</a>
+            @else
+                No adjuntado
+            @endif
+        </p>
 
-        <div class="form-group">
-            <label for="rut">Anexar RUT</label>
-            <input type="file" name="rut" id="rut" class="form-control-file" required>
-        </div>
+        <p>
+            <strong>Información del Proyecto:</strong><br>
+            @if($project->project_information_path)
+                <a href="{{ Storage::url($project->project_information_path) }}" target="_blank">Ver Info Proyecto</a>
+            @else
+                No adjuntado
+            @endif
+        </p>
 
-        <div class="form-group">
-            <label for="chamber_of_commerce">Anexar Cámara de Comercio</label>
-            <input type="file" name="chamber_of_commerce" id="chamber_of_commerce" class="form-control-file" required>
-        </div>
+        <p>
+            <strong>Aprobación Consulta:</strong><br>
+            @if($project->approval_query_path)
+                <a href="{{ Storage::url($project->approval_query_path) }}" target="_blank">Ver Aprobación Consulta</a>
+            @else
+                No adjuntado
+            @endif
+        </p>
+    </div>
 
-        <div class="form-group">
-            <label for="financial_statements">Anexar Estados Financieros Últimos 2 Años</label>
-            <input type="file" name="financial_statements" id="financial_statements" class="form-control-file" required>
-        </div>
+    {{-- Documentos de la tabla 'documents' asociados al proyecto (si los tienes relacionados) --}}
+    <div class="mb-4">
+        <h3>Otros Documentos Adjuntos</h3>
+        @if($project->documents->count() > 0)
+            <ul>
+                @foreach($project->documents as $doc)
+                    <li>
+                        <a href="{{ Storage::url($doc->file_path) }}" target="_blank">
+                            {{ $doc->name }}
+                        </a>
+                        <small> ({{ $doc->mime_type }} - {{ round($doc->size / 1024, 2) }} KB)</small>
+                    </li>
+                @endforeach
+            </ul>
+        @else
+            <p>No hay documentos adicionales.</p>
+        @endif
+    </div>
 
-        <div class="form-group">
-            <label for="legal_representative_id">Anexar Cédula Representante Legal</label>
-            <input type="file" name="legal_representative_id" id="legal_representative_id" class="form-control-file" required>
-        </div>
-
-        <div class="form-group">
-            <label for="credit_request">Anexo 1: Solicitud de Crédito</label>
-            <input type="file" name="credit_request" id="credit_request" class="form-control-file" required>
-        </div>
-
-        <div class="form-group">
-            <label for="project_information">Anexo 2: Información Proyecto</label>
-            <input type="file" name="project_information" id="project_information" class="form-control-file" required>
-        </div>
-
-        <div class="form-group">
-            <label for="approval_query">Anexo 3: Aprobación Consulta</label>
-            <input type="file" name="approval_query" id="approval_query" class="form-control-file" required>
-        </div>
-
-        <button type="submit" class="btn btn-primary mt-3">Crear Proyecto</button>
-    </form>
+    <a href="{{ route('projects.index') }}" class="btn btn-secondary">Volver a la lista</a>
 </div>
 @endsection
