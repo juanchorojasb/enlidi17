@@ -6,69 +6,32 @@ use App\Models\Stage;
 use App\Models\Project;
 use App\Models\Document;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class StageController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth'); // Aplicar el middleware 'auth' a todos los métodos
-    }
-
-    public function create(Project $project)
-    {
-        return view('stages.create', compact('project'));
-    }
-
-    public function store(Request $request, Project $project)
-    {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            // ... otras reglas de validación
-        ]);
-
-        $stage = $project->stages()->create([
-            'name' => $request->name,
-            // ... otros campos del formulario
-        ]);
-
-        return redirect()->route('projects.show', $project);
+        $this->middleware('auth');
     }
 
     public function show(Stage $stage)
     {
-        return view('stages.show', compact('stage'));
-    }
-
-    public function edit(Stage $stage)
-    {
-        return view('stages.edit', compact('stage'));
-    }
-
-    public function update(Request $request, Stage $stage)
-    {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            // ... otras reglas de validación
-        ]);
-
-        $stage->update([
-            'name' => $request->name,
-            // ... otros campos del formulario
-        ]);
-
-        return redirect()->route('projects.show', $stage->project);
-    }
-
-    public function destroy(Stage $stage)
-    {
-        $stage->delete();
-        return redirect()->route('projects.show', $stage->project);
-    }
-
-    public function download(Document $document)
-    {
-        $path = storage_path('app/public/' . $document->path);
-
-        return response()->download($path, $document->name);
+        // Verificar si el usuario actual es un administrador
+        if (Auth::user()->hasRole('admin')) {
+            // Si es un administrador, cargar la vista de administrador para la etapa
+            $documents = $stage->documents;
+            return view('admin.stages.show', compact('stage', 'documents'));
+        } else {
+            // Si no es un administrador, verificar si el usuario actual tiene permiso para ver esta etapa
+            // Esto se puede hacer comprobando si el proyecto asociado a la etapa pertenece al usuario actual
+            if ($stage->project->user_id == Auth::user()->id) {
+                $documents = $stage->documents;
+                return view('user.stages.show', compact('stage', 'documents'));
+            } else {
+                // Si el usuario no tiene permiso, abortar con un error 403 (No autorizado)
+                abort(403, 'No tienes permiso para ver esta etapa.');
+            }
+        }
     }
 }

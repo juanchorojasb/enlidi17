@@ -1,70 +1,59 @@
 @extends('layouts.admin')
 
-@section('content')
-<section class="w3l-main-slider" id="welcome">
-    <div class="companies20-content">
-        <div class="owl-one owl-carousel owl-theme">
-            <div class="item">
-                <li>
-                    <div class="slider-info banner-view bg bg2">
-                        <div class="banner-info">
-                            <div class="container">
-                                <div class="banner-info-bg text-center">
-                                    <h5>¡Bienvenido al panel de administración, {{ Auth::user()->name }}!</h5>
-                                    <p class="mt-md-4 mt-3">Aquí puedes gestionar los proyectos, etapas y documentos de la plataforma.</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </li>
-            </div>
-        </div>
-    </div>
-</section>
+@section('title', 'Dashboard - Admin')
 
-<section id="about" class="home-services pt-lg-0">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-4 col-md-6 col-sm-12">
-                <div class="box-wrap">
-                    <div class="box-wrap-grid">
-                        <div class="icon">
-                            <span class="fa fa-folder-open"></span>
-                        </div>
-                        <div class="info">
-                            <h4><a href="{{ route('projects.index') }}">Proyectos</a></h4>
-                            <p class="mt-4">Accede a la lista de todos los proyectos y gestiona su estado.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-4 col-md-6 col-sm-12 mt-md-0 mt-4">
-                <div class="box-wrap">
-                    <div class="box-wrap-grid">
-                        <div class="icon">
-                            <span class="fa fa-users"></span>
-                        </div>
-                        <div class="info">
-                            <h4><a href="{{ route('users.index') }}">Usuarios</a></h4> 
-                            <p class="mt-4">Gestiona los usuarios de la plataforma y sus roles.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-4 col-md-6 col-sm-12 mt-lg-0 mt-4">
-                <div class="box-wrap">
-                    <div class="box-wrap-grid">
-                        <div class="icon">
-                            <span class="fa fa-cogs"></span>
-                        </div>
-                        <div class="info">
-                            <h4><a href="{{ route('settings.index') }}">Configuración</a></h4> 
-                            <p class="mt-4">Configura los parámetros de la aplicación.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
+@section('content')
+ <div class="graphs">
+     <div class="col_3">
+          <div class="col-md-3 widget widget1">
+              <div class="r3_counter_box">
+                  <i class="pull-left fa fa-pie-chart icon-rounded"></i>
+                  <div class="stats">
+                      <h5><strong>{{ $pendingProjectsCount ?? 0 }}</strong></h5>
+                      <span>Proyectos Pendientes</span>
+                  </div>
+              </div>
+          </div>
+          <div class="col-md-3 widget widget1">
+              <div class="r3_counter_box">
+                  <i class="pull-left fa fa-laptop user1 icon-rounded"></i>
+                  <div class="stats">
+                      <h5><strong>{{ $approvedProjectsCount ?? 0 }}</strong></h5>
+                      <span>Proyectos Aprobados</span>
+                  </div>
+              </div>
+          </div>
+          <div class="col-md-3 widget widget1">
+              <div class="r3_counter_box">
+                  <i class="pull-left fa fa-money user2 icon-rounded"></i>
+                  <div class="stats">
+                      <h5><strong>{{ $rejectedProjectsCount ?? 0 }}</strong></h5>
+                      <span>Proyectos Rechazados</span>
+                  </div>
+              </div>
+          </div>
+          <div class="col-md-3 widget">
+              <div class="r3_counter_box">
+                  <i class="pull-left fa fa-dollar icon-rounded"></i>
+                  <div class="stats">
+                      <h5><strong>{{ $allProjectsCount ?? 0 }}</strong></h5>
+                      <span>Total de Proyectos</span>
+                  </div>
+              </div>
+          </div>
+          <div class="clearfix"> </div>
+      </div>
+     <div class="row mt-3">
+         <div class="col-md-12">
+             <div class="card">
+                 <div class="card-body">
+                     <h5 class="card-title">Todos los Proyectos</h5>
+                     <p class="card-text">
+                         <a href="{{ route('admin.projects.index') }}" class="btn btn-primary">Ver Todos Los Proyectos</a>
+                     </p>
+                 </div>
+             </div>
+         </div>
+     </div>
+ </div>
 @endsection
