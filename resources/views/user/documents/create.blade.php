@@ -9,110 +9,174 @@
 
         <h2 class="mb-3">Etapa 1: Financiación</h2>
 
+        {{-- Nombre del proyecto --}}
         <div class="form-group">
             <label for="name">Nombre del Proyecto:</label>
-            <input type="text" name="name" id="name" class="form-control" value="{{ old('name') }}" required>
+            <input type="text" 
+                   name="name" 
+                   id="name" 
+                   class="form-control" 
+                   value="{{ old('name') }}" 
+                   required>
             @error('name')
                 <div class="text-danger">{{ $message }}</div>
             @enderror
         </div>
 
+        {{-- Nombre del cliente --}}
         <div class="form-group">
             <label for="client_name">Nombre del Cliente:</label>
-            <input type="text" name="client_name" id="client_name" class="form-control" value="{{ old('client_name') }}" required>
+            <input type="text" 
+                   name="client_name" 
+                   id="client_name" 
+                   class="form-control" 
+                   value="{{ old('client_name') }}" 
+                   required>
             @error('client_name')
                 <div class="text-danger">{{ $message }}</div>
             @enderror
         </div>
 
+        {{-- NIT --}}
         <div class="form-group">
             <label for="nit">NIT:</label>
-            <input type="text" name="nit" id="nit" class="form-control" value="{{ old('nit') }}" required>
+            <input type="text" 
+                   name="nit" 
+                   id="nit" 
+                   class="form-control" 
+                   value="{{ old('nit') }}" 
+                   required>
             @error('nit')
                 <div class="text-danger">{{ $message }}</div>
             @enderror
         </div>
 
+        {{-- Email --}}
         <div class="form-group">
             <label for="email">Email:</label>
-            <input type="email" name="email" id="email" class="form-control" value="{{ old('email') }}" required>
+            <input type="email" 
+                   name="email" 
+                   id="email" 
+                   class="form-control" 
+                   value="{{ old('email') }}" 
+                   required>
             @error('email')
                 <div class="text-danger">{{ $message }}</div>
             @enderror
         </div>
 
+        {{-- Teléfono --}}
         <div class="form-group">
             <label for="phone">Teléfono:</label>
-            <input type="text" name="phone" id="phone" class="form-control" value="{{ old('phone') }}" required>
+            <input type="text" 
+                   name="phone" 
+                   id="phone" 
+                   class="form-control" 
+                   value="{{ old('phone') }}" 
+                   required>
             @error('phone')
                 <div class="text-danger">{{ $message }}</div>
             @enderror
         </div>
 
+        {{-- Ciudad/Municipio --}}
         <div class="form-group">
             <label for="city">Ciudad/Municipio:</label>
-            <input type="text" name="city" id="city" class="form-control" value="{{ old('city') }}" required>
+            <input type="text" 
+                   name="city" 
+                   id="city" 
+                   class="form-control" 
+                   value="{{ old('city') }}" 
+                   required>
             @error('city')
                 <div class="text-danger">{{ $message }}</div>
             @enderror
         </div>
 
+        {{-- Dirección de instalación (manteniendo solo uno) --}}
         <div class="form-group">
-            <label for="address">Dirección:</label>
-            <input type="text" name="address" id="address" class="form-control" value="{{ old('address') }}" required>
-            @error('address')
-                <div class="text-danger">{{ $message }}</div>
-            @enderror
-        </div>
-
-        <div class="form-group">
-            <label for="project_description">Descripción del Proyecto:</label>
-            <textarea name="project_description" id="project_description" class="form-control" rows="3" required>{{ old('project_description') }}</textarea>
-            @error('project_description')
-                <div class="text-danger">{{ $message }}</div>
-            @enderror
-        </div>
-
-        <div class="form-group">
-            <label for="project_value">Valor del Proyecto:</label>
-            <input type="number" name="project_value" id="project_value" class="form-control" value="{{ old('project_value') }}" required>
-            @error('project_value')
-                <div class="text-danger">{{ $message }}</div>
-            @enderror
-        </div>
-
-        <div class="form-group">
-            <label for="start_date">Fecha de Inicio:</label>
-            <input type="date" name="start_date" id="start_date" class="form-control" value="{{ old('start_date') }}" required>
-            @error('start_date')
-                <div class="text-danger">{{ $message }}</div>
-            @enderror
-        </div>
-
-        <div class="form-group">
-            <label for="department">Departamento:</label>
-            <input type="text" name="department" id="department" class="form-control" value="{{ old('department') }}" required>
-            @error('department')
-                <div class="text-danger">{{ $message }}</div>
-            @enderror
-        </div>
-
-        <div class="form-group">
-            <label for="country">País:</label>
-            <input type="text" name="country" id="country" class="form-control" value="{{ old('country') }}" required>
-            @error('country')
-                <div class="text-danger">{{ $message }}</div>
-            @enderror
-        </div>
-
-        <div class="form-group">
-            <label for="installation_address">Dirección de Instalación:</label>
-            <input type="text" name="installation_address" id="installation_address" class="form-control" value="{{ old('installation_address') }}" required>
+            <label for="installation_address">Dirección de instalación:</label>
+            <input type="text" 
+                   name="installation_address" 
+                   id="installation_address" 
+                   class="form-control" 
+                   value="{{ old('installation_address') }}" 
+                   required>
             @error('installation_address')
                 <div class="text-danger">{{ $message }}</div>
             @enderror
         </div>
 
+        {{-- Descripción del proyecto --}}
+        <div class="form-group">
+            <label for="project_description">Descripción del Proyecto:</label>
+            <textarea name="project_description" 
+                      id="project_description" 
+                      class="form-control" 
+                      rows="3" 
+                      required>{{ old('project_description') }}</textarea>
+            @error('project_description')
+                <div class="text-danger">{{ $message }}</div>
+            @enderror
+        </div>
+
+        {{-- Valor del proyecto --}}
+        <div class="form-group">
+            <label for="project_value">Valor del Proyecto:</label>
+            <input type="number" 
+                   name="project_value" 
+                   id="project_value" 
+                   class="form-control" 
+                   value="{{ old('project_value') }}" 
+                   required>
+            @error('project_value')
+                <div class="text-danger">{{ $message }}</div>
+            @enderror
+        </div>
+
+        {{-- Fecha de inicio --}}
+        <div class="form-group">
+            <label for="start_date">Fecha de Inicio:</label>
+            <input type="date" 
+                   name="start_date" 
+                   id="start_date" 
+                   class="form-control" 
+                   value="{{ old('start_date') }}" 
+                   required>
+            @error('start_date')
+                <div class="text-danger">{{ $message }}</div>
+            @enderror
+        </div>
+
+        {{-- Departamento --}}
+        <div class="form-group">
+            <label for="department">Departamento:</label>
+            <input type="text" 
+                   name="department" 
+                   id="department" 
+                   class="form-control" 
+                   value="{{ old('department') }}" 
+                   required>
+            @error('department')
+                <div class="text-danger">{{ $message }}</div>
+            @enderror
+        </div>
+
+        {{-- País --}}
+        <div class="form-group">
+            <label for="country">País:</label>
+            <input type="text" 
+                   name="country" 
+                   id="country" 
+                   class="form-control" 
+                   value="{{ old('country') }}" 
+                   required>
+            @error('country')
+                <div class="text-danger">{{ $message }}</div>
+            @enderror
+        </div>
+
+        {{-- Documentos (RUT, Cámara de Comercio, Estados Financieros, etc.) --}}
         <div class="form-group">
             <label for="rut">Anexar RUT (PDF, DOC, DOCX, XLS, XLSX, ZIP, JPG, JPEG, PNG):</label>
             <input type="file" name="rut" id="rut" class="form-control-file" required>
@@ -169,8 +233,10 @@
             @enderror
         </div>
 
+        {{-- Estado inicial del proyecto --}}
         <input type="hidden" name="status" value="En evaluación">
 
+        {{-- Botones de acción --}}
         <button type="submit" class="btn btn-primary">Crear Proyecto</button>
         <a href="{{ route('user.dashboard') }}" class="btn btn-secondary">Cancelar</a>
     </form>
