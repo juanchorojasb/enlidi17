@@ -85,12 +85,15 @@ class DocumentController extends Controller
         ]);
 
         return redirect()
-            ->route('documents.show', $document->id)
+            ->route('documents.index') // Cambiado a index
             ->with('success', 'Documento subido correctamente.');
     }
 
     /**
      * Muestra un documento tras verificar permisos.
+     *
+     * IMPORTANTE: Este método ahora solo redirige a la URL pública del documento.
+     * La visualización real se maneja en la vista 'documents.index'.
      */
     public function show(Document $document)
     {
@@ -99,18 +102,8 @@ class DocumentController extends Controller
             abort(403, 'No tienes permiso para ver este documento.');
         }
 
-        // Ruta física en /storage/app/public/...
-        $path = storage_path('app/public/' . $document->path);
-
-        if (!file_exists($path)) {
-            abort(404, 'El documento no existe en el servidor.');
-        }
-
-        // Devolverlo inline (si es PDF u otro tipo) con las cabeceras adecuadas
-        return response()->file($path, [
-            'Content-Type'        => $document->mime_type,
-            'Content-Disposition' => 'inline; filename="'.$document->name.'"',
-        ]);
+        // Redirigir a la URL pública del documento.
+        return redirect(Storage::disk('public')->url($document->path));
     }
 
     /**
@@ -175,7 +168,7 @@ class DocumentController extends Controller
         $document->save();
 
         return redirect()
-            ->route('documents.show', $document->id)
+            ->route('documents.index') // Cambiado a index
             ->with('success', 'Documento actualizado correctamente.');
     }
 

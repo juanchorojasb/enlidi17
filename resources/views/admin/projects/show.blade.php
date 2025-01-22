@@ -3,7 +3,7 @@
 @section('content')
 <div class="container">
     <h1 class="mb-4">Proyecto: {{ $project->name }}</h1>
-    
+
     {{-- Información básica del proyecto --}}
     <div class="mb-3">
         <p><strong>Cliente:</strong> {{ $project->client_name }}</p>
@@ -14,9 +14,19 @@
         <p><strong>Departamento:</strong> {{ $project->department }}</p>
         <p><strong>País:</strong> {{ $project->country }}</p>
         <p><strong>Dirección de Instalación:</strong> {{ $project->installation_address }}</p>
-        <p><strong>Valor del Proyecto:</strong> {{ $project->project_value }}</p>
-        <p><strong>Fecha de Inicio:</strong> {{ $project->start_date }}</p>
-        <p><strong>Estado:</strong> {{ $project->status }}</p>
+        <p><strong>Valor del Proyecto:</strong> ${{ number_format($project->project_value, 0, ',', '.') }}</p>
+        <p><strong>Fecha de Inicio:</strong> {{ $project->start_date->format('d/m/Y') }}</p>
+        <p><strong>Estado:</strong>
+            @if ($project->status == 'pendiente')
+                <span class="badge bg-warning text-dark">Pendiente</span>
+            @elseif ($project->status == 'aprobado')
+                <span class="badge bg-success">Aprobado</span>
+            @elseif ($project->status == 'rechazado')
+                <span class="badge bg-danger">Rechazado</span>
+            @else
+                {{ $project->status }}
+            @endif
+        </p>
         <p><strong>Descripción:</strong> {{ $project->project_description }}</p>
     </div>
 
@@ -27,10 +37,13 @@
             @foreach ($project->stages as $stage)
                 <li class="list-group-item">
                     <h5 class="mb-1">
-                        {{ $stage->name }} 
-                        <small class="text-muted">({{ $stage->status }})</small>
+                        {{ $stage->name }}
+                        <small class="text-muted">
+                            ({{ $stage->status }})
+                        </small>
                     </h5>
-                    <a href="{{ route('stages.show', $stage) }}" class="btn btn-sm btn-primary">Ver Detalle de Etapa</a>
+                    <a href="{{ route('admin.etapas.show', ['project' => $project, 'stage' => $stage]) }}" class="btn btn-sm btn-primary">Ver Detalle de Etapa</a>
+
                 </li>
             @endforeach
         </ul>
@@ -41,7 +54,6 @@
     {{-- Sección de Documentos agrupados por etapa --}}
     <h2 class="mt-4">Documentos</h2>
     @php
-        // Contar el total de documentos (sumando los de cada etapa)
         $totalDocs = $project->stages->sum(function ($stage) {
             return $stage->documents->count();
         });
@@ -62,15 +74,21 @@
                                 <ul class="list-group">
                                     @foreach ($stage->documents as $document)
                                         <li class="list-group-item">
-                                            <strong>{{ $document->name }}</strong>
-                                            <br>
-                                            <a href="{{ route('documents.show', $document) }}" target="_blank">
-                                                Ver / Descargar
+                                            <a href="{{ Storage::disk('public')->url($document->path) }}" target="_blank">
+                                                <strong>{{ $document->name }}</strong>
                                             </a>
+                                            <br>
                                             <span class="text-muted">
-                                                ({{ $document->mime_type }}, 
-                                                {{ round($document->size / 1024, 2) }} KB)
+                                                ({{ $document->mime_type }},
+                                                {{ number_format($document->size / 1024, 2) }} KB)
                                             </span>
+                                            <form action="{{ route('admin.documents.destroy', $document) }}" method="POST" class="d-inline">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('¿Estás seguro de que quieres eliminar este documento?')">
+                                                    Eliminar
+                                                </button>
+                                            </form>
                                         </li>
                                     @endforeach
                                 </ul>

@@ -42,7 +42,8 @@
                                             </td>
                                             <td>
                                                 <a href="{{ route('admin.projects.show', $project->id) }}" class="btn btn-primary btn-sm">Ver</a>
-                                                <a href="{{ route('admin.projects.edit', $project->id) }}" class="btn btn-warning btn-sm">Editar</a>
+                                                {{-- Eliminar o comentar la siguiente línea --}}
+                                                {{-- <a href="{{ route('admin.projects.edit', $project->id) }}" class="btn btn-warning btn-sm">Editar</a> --}}
 
                                                 {{-- Botones de aprobar/rechazar --}}
                                                 @if ($project->status !== 'aprobado')

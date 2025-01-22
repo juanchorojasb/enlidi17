@@ -4,32 +4,40 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Project;
+use App\Models\Stage;
 
 class AdminController extends Controller
 {
     public function __construct()
     {
-        // Si tienes middlewares para admin, colócalos aquí
-        // $this->middleware('auth');
-        // $this->middleware('role:admin');
+        $this->middleware('auth');
+        $this->middleware('role:admin');
     }
 
     /**
-     * Muestra el dashboard de administrador con la lista de proyectos.
+     * Muestra el dashboard de administrador con estadísticas y enlaces a otras secciones.
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function dashboard()
     {
-        // Obtiene todos los proyectos.
-        // Si quieres cargar relaciones (p. ej. documentos, stages, user), puedes usar with:
-        // $projects = Project::with(['user', 'documents', 'stages'])->get();
-        $projects = Project::all();
+        // Obtiene estadísticas para el dashboard
+        $pendingProjectsCount = Project::where('status', 'pendiente')->count();
+        $approvedProjectsCount = Project::where('status', 'aprobado')->count();
+        $rejectedProjectsCount = Project::where('status', 'rechazado')->count();
+        $allProjectsCount = Project::count();
+        $allStagesCount = Stage::count(); // Obtiene el conteo total de stages
 
-        // Retorna la vista "admin.dashboard" con la lista de proyectos
-        return view('admin.dashboard', compact('projects'));
+        // Retorna la vista "admin.dashboard" con las estadísticas
+        return view('admin.dashboard', compact(
+            'pendingProjectsCount',
+            'approvedProjectsCount',
+            'rejectedProjectsCount',
+            'allProjectsCount',
+            'allStagesCount' // Pasa el conteo de stages a la vista
+        ));
     }
-    
+
     /**
      * (Opcional) Muestra el detalle de un proyecto específico.
      * Asumiendo que en tu vista querrás ver documentos y etapas,

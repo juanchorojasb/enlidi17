@@ -33,7 +33,7 @@ class ProjectController extends Controller
             $view = 'admin.projects.index'; // Vista para administradores
         } else {
             $projects = $user->projects()->paginate(10);
-            $view = 'user.projects.index'; // Vista para usuarios
+            $view = 'projects.index'; // Vista para usuarios
         }
 
         return view($view, compact('projects'));
@@ -42,13 +42,13 @@ class ProjectController extends Controller
     public function create()
     {
         // Retornar la vista para crear proyectos (para usuarios normales)
-        return view('user.projects.create');
+        return view('projects.create');
     }
 
     public function store(Request $request)
     {
         \Log::info('Inicio del método store - Datos recibidos:', $request->all());
-    
+
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'client_name' => 'required|string|max:255',
@@ -68,9 +68,9 @@ class ProjectController extends Controller
             'project_information' => 'required|file|max:10240|mimes:pdf,doc,docx,xls,xlsx,zip,jpg,jpeg,png',
             'approval_query' => 'required|file|max:10240|mimes:pdf,doc,docx,xls,xlsx,zip,jpg,jpeg,png',
         ]);
-    
+
         \Log::info('Datos validados:', $validatedData);
-    
+
         try {
             // Guarda los archivos y obtén las rutas
             $rutPath = $request->file('rut')->store('documents', 'public');
@@ -80,7 +80,7 @@ class ProjectController extends Controller
             $creditRequestPath = $request->file('credit_request')->store('documents', 'public');
             $projectInformationPath = $request->file('project_information')->store('documents', 'public');
             $approvalQueryPath = $request->file('approval_query')->store('documents', 'public');
-    
+
             \Log::info('Rutas de archivos:', [
                 'rut' => $rutPath,
                 'chamber_of_commerce' => $chamberOfCommercePath,
@@ -90,7 +90,7 @@ class ProjectController extends Controller
                 'project_information' => $projectInformationPath,
                 'approval_query' => $approvalQueryPath,
             ]);
-    
+
             // Crea el proyecto con el estado inicial "En evaluación"
             $project = auth()->user()->projects()->create([
                 'name' => $validatedData['name'],
@@ -112,17 +112,17 @@ class ProjectController extends Controller
                 'approval_query_path' => $approvalQueryPath,
                 'status' => 'En evaluación',
             ]);
-    
+
             \Log::info('Proyecto creado:', $project->toArray());
-    
+
             // Crea las dos etapas del proyecto
             $project->stages()->createMany([
-                ['name' => 'Etapa 1: Aprobación', 'status' => 'En revisión'],
-                ['name' => 'Etapa 2: Financiación', 'status' => 'Pendiente'],
+                ['name' => 'Etapa 1: Aprobación', 'status' => 'En revisión', 'tipo' => 'usuario'],
+                ['name' => 'Etapa 2: Financiación', 'status' => 'Pendiente', 'tipo' => 'usuario'],
             ]);
-    
+
             \Log::info('Etapas creadas para el proyecto: ' . $project->id);
-    
+
             // Crear documentos y asociarlos al proyecto
             $documentPaths = [
                 'rut_path' => $rutPath,
@@ -133,13 +133,13 @@ class ProjectController extends Controller
                 'project_information_path' => $projectInformationPath,
                 'approval_query_path' => $approvalQueryPath,
             ];
-    
+
             foreach ($documentPaths as $fieldName => $path) {
                 $file = $request->file(str_replace('_path', '', $fieldName));
                 if ($file) {
                     \Log::info('Procesando archivo:', ['field' => $fieldName, 'path' => $path, 'originalName' => $file->getClientOriginalName()]);
                     $originalName = $file->getClientOriginalName();
-    
+
                     $projectInstance = Project::findOrFail($project->id);
                     $projectInstance->documents()->create([
                         'file_path' => $path,
@@ -149,13 +149,13 @@ class ProjectController extends Controller
                     ]);
                 }
             }
-    
+
             \Log::info('Documentos creados y asociados al proyecto: ' . $project->id);
-    
+
             // Redirigir a la vista de detalles del proyecto
             return redirect()->route('projects.show', $project->id)
                 ->with('success', 'Proyecto creado exitosamente.');
-    
+
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             \Log::error('Error: No se pudo encontrar el proyecto después de crearlo: ' . $e->getMessage());
             return redirect()->back()->withInput()->with('error', 'Error al crear el proyecto. No se pudo encontrar el proyecto después de crearlo.');
@@ -164,7 +164,7 @@ class ProjectController extends Controller
             return redirect()->back()->withInput()->with('error', 'Error al crear el proyecto: ' . $e->getMessage());
         }
     }
-    
+
     // ... (resto del controlador: show, edit, update, destroy, approve, reject) ...
 
     public function show(Project $project)
@@ -176,7 +176,7 @@ class ProjectController extends Controller
 
         // Para usuarios normales, verificar que el proyecto les pertenezca
         if ($project->user_id == Auth::user()->id) {
-            return view('user.projects.show', compact('project'));
+            return view('projects.show', compact('project'));
         }
 
         abort(403, 'No tienes permiso para ver este proyecto.');
@@ -190,7 +190,7 @@ class ProjectController extends Controller
         }
 
         // Retornar la vista para editar proyectos (para usuarios normales)
-        return view('user.projects.edit', compact('project'));
+        return view('projects.edit', compact('project'));
     }
 
     public function update(Request $request, Project $project)
@@ -199,7 +199,7 @@ class ProjectController extends Controller
         if (Auth::user()->id !== $project->user_id) {
             abort(403, 'No tienes permiso para actualizar este proyecto.');
         }
-        
+
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'client_name' => 'required|string|max:255',
@@ -207,7 +207,7 @@ class ProjectController extends Controller
             'email' => 'required|email|max:255',
             'phone' => 'required|string|max:255',
             'city' => 'required|string|max:255',
-            'address' => 'required|string|max:255',
+            'installation_address' => 'required|string|max:255',
             'project_description' => 'required|string',
             'project_value' => 'required|numeric',
             'start_date' => 'required|date',
@@ -237,7 +237,7 @@ class ProjectController extends Controller
             'email' => $validatedData['email'],
             'phone' => $validatedData['phone'],
             'city' => $validatedData['city'],
-            'address' => $validatedData['address'],
+            'installation_address' => $validatedData['installation_address'],
             'project_description' => $validatedData['project_description'],
             'project_value' => $validatedData['project_value'],
             'start_date' => $validatedData['start_date'],
@@ -303,7 +303,7 @@ class ProjectController extends Controller
             $project->update(['status' => 'Financiado']);
         }
 
-        // Independientemente de la etapa, actualizamos el estado de la etapa actual a 'Aprobado'
+        // Independientemente de la etapa, actualizamos el estado de la etapa actual a 'Aprobada'
         $currentStage->update(['status' => 'Aprobada']);
 
         return redirect()->route('admin.projects.show', $project)->with('success', 'Etapa aprobada correctamente.');
@@ -327,7 +327,5 @@ class ProjectController extends Controller
 
         return redirect()->route('admin.projects.show', $project)->with('success', 'Etapa rechazada.');
     }
-
-    // Si necesitas agregar más métodos al controlador, puedes hacerlo aquí.
 
 } // Fin de la clase ProjectController
