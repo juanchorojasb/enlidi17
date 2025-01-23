@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Project extends Model
 {
@@ -15,17 +17,19 @@ class Project extends Model
      * @var array
      */
     protected $fillable = [
-        'user_id',
         'name',
         'client_name',
         'nit',
         'email',
         'phone',
         'city',
+        'department',
+        'country',
         'installation_address',
         'project_description',
         'project_value',
         'start_date',
+        'status',
         'rut_path',
         'chamber_of_commerce_path',
         'financial_statements_path',
@@ -33,29 +37,39 @@ class Project extends Model
         'credit_request_path',
         'project_information_path',
         'approval_query_path',
-        'status', // Puede ser 'pending', 'approved', 'rejected', etc.
+        'user_id',
     ];
 
     /**
-     * Define la relación: Un proyecto pertenece a un usuario.
+     * The attributes that should be cast.
+     *
+     * @var array
      */
-    public function user()
+    protected $casts = [
+        'start_date' => 'date:d/m/Y', // Formato de fecha personalizado
+        'email_verified_at' => 'datetime',
+    ];
+
+    /**
+     * Obtiene el usuario al que pertenece el proyecto.
+     */
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
     /**
-     * Define la relación: Un proyecto tiene muchas etapas (stages).
+     * Obtiene las etapas asociadas al proyecto.
      */
-    public function stages()
+    public function stages(): HasMany
     {
         return $this->hasMany(Stage::class);
     }
 
     /**
-     * Define la relación: Un proyecto tiene muchos documentos.
+     * Obtiene los documentos asociados al proyecto.
      */
-    public function documents()
+    public function documents(): HasMany
     {
         return $this->hasMany(Document::class);
     }

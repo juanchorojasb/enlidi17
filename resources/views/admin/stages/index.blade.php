@@ -1,81 +1,66 @@
 @extends('layouts.admin')
 
 @section('content')
-<section id="registered-projects" class="home-services pt-lg-0">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="box-wrap">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h4 class="mb-0">Proyectos Registrados</h4>
-                        {{-- <a href="{{ route('admin.projects.create') }}" class="btn btn-primary">Nuevo Proyecto</a> --}}
-                    </div>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">Stages</div>
 
-                    @if($projects->count() > 0)
-                        <div class="table-responsive mt-4">
-                            <table class="table table-striped">
-                                <thead>
-                                    <tr>
-                                        <th>#</th>
-                                        <th>Cliente</th>
-                                        <th>Ciudad</th>
-                                        <th>Estado</th>
-                                        <th>Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach($projects as $index => $project)
-                                        <tr>
-                                            <td>{{ $index + 1 }}</td>
-                                            <td>{{ $project->client_name }}</td>
-                                            <td>{{ $project->city }}</td>
-                                            <td>
-                                                @if ($project->status == 'pendiente')
-                                                    <span class="badge bg-warning text-dark">Pendiente</span>
-                                                @elseif ($project->status == 'aprobado')
-                                                    <span class="badge bg-success">Aprobado</span>
-                                                @elseif ($project->status == 'rechazado')
-                                                    <span class="badge bg-danger">Rechazado</span>
-                                                @else
-                                                    {{ $project->status }}
-                                                @endif
-                                            </td>
-                                            <td>
-                                                <a href="{{ route('admin.projects.show', $project->id) }}" class="btn btn-primary btn-sm">Ver</a>
-                                                {{-- Eliminar o comentar la siguiente línea --}}
-                                                {{-- <a href="{{ route('admin.projects.edit', $project->id) }}" class="btn btn-warning btn-sm">Editar</a> --}}
-
-                                                {{-- Botones de aprobar/rechazar --}}
-                                                @if ($project->status !== 'aprobado')
-                                                    <form action="{{ route('admin.projects.approve', $project->id) }}" method="POST" class="d-inline">
-                                                        @csrf
-                                                        <button type="submit" class="btn btn-success btn-sm">Aprobar</button>
-                                                    </form>
-                                                @endif
-
-                                                @if ($project->status !== 'rechazado')
-                                                    <form action="{{ route('admin.projects.reject', $project->id) }}" method="POST" class="d-inline">
-                                                        @csrf
-                                                        <button type="submit" class="btn btn-danger btn-sm">Rechazar</button>
-                                                    </form>
-                                                @endif
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
+                <div class="card-body">
+                    @if (session('success'))
+                        <div class="alert alert-success" role="alert">
+                            {{ session('success') }}
                         </div>
-
-                        {{-- Paginación --}}
-                        <div class="mt-3">
-                            {{ $projects->links() }}
-                        </div>
-                    @else
-                        <p class="mt-4">No hay proyectos registrados en este momento.</p>
                     @endif
+
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Proyecto</th>
+                                <th>Nombre</th>
+                                <th>Estado</th>
+                                <th>Tipo</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse ($stages as $stage)
+                                <tr>
+                                    <td>{{ $stage->id }}</td>
+                                    <td>
+                                        @if ($stage->project)
+                                            <a href="{{ route('admin.projects.show', $stage->project->id) }}">
+                                                {{ $stage->project->name }}
+                                            </a>
+                                        @else
+                                            N/A
+                                        @endif
+                                    </td>
+                                    <td>{{ $stage->name }}</td>
+                                    <td>{{ $stage->status }}</td>
+                                    <td>{{ $stage->tipo }}</td>
+                                    <td>
+                                        <a href="{{ route('admin.stages.show', ['project' => $stage->project, 'stage' => $stage]) }}" class="btn btn-info btn-sm">Ver</a>
+
+                                        <form action="{{ route('admin.stages.destroy', ['project' => $stage->project, 'stage' => $stage]) }}" method="POST" style="display: inline-block;">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de eliminar este stage?')">Eliminar</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="6">No hay stages registrados.</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
     </div>
-</section>
+</div>
 @endsection

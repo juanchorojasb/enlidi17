@@ -30,7 +30,7 @@ class StageController extends Controller
             $stages = Stage::whereHas('project', function ($q) {
                 $q->where('user_id', Auth::id());
             })->with('project')->get();
-            return view('stages.index', compact('stages'));
+            return view('user.stages.index', compact('stages')); // Corregido a 'user.stages.index'
         }
     }
 
@@ -43,7 +43,7 @@ class StageController extends Controller
         // Proyectos que pertenecen al user
         $projects = Project::where('user_id', Auth::id())->get();
         // Vista de creación para user
-        return view('stages.create', compact('projects'));
+        return view('user.stages.create', compact('projects')); // Corregido a 'user.stages.create'
     }
 
     /**
@@ -99,7 +99,7 @@ class StageController extends Controller
         if (Auth::user()->hasRole('admin')) {
             return view('admin.stages.show', compact('stage', 'documents', 'project'));
         } else {
-            return view('stages.show', compact('stage', 'documents', 'project'));
+            return view('user.stages.show', compact('stage', 'documents', 'project')); // Corregido a 'user.stages.show'
         }
     }
 
@@ -120,7 +120,7 @@ class StageController extends Controller
             abort(403, 'No tienes permiso para editar esta etapa.');
         }
 
-        return view('stages.edit', compact('stage', 'project'));
+        return view('user.stages.edit', compact('stage', 'project')); // Corregido a 'user.stages.edit'
     }
 
     /**
@@ -165,13 +165,20 @@ class StageController extends Controller
         $project = Project::findOrFail($projectId);
         $stage = Stage::findOrFail($stageId);
 
-        // Solo los usuarios pueden eliminar stages
-        if ($project->user_id !== Auth::id()) {
+        // Verificar permisos:
+        // - Admin puede eliminar cualquier etapa
+        // - User solo si es dueño del proyecto
+        if (!Auth::user()->hasRole('admin') && $project->user_id !== Auth::id()) {
             abort(403, 'No tienes permiso para eliminar esta etapa.');
         }
 
         $stage->delete();
 
-        return redirect()->route('projects.show', $project->id)->with('success', 'Etapa eliminada exitosamente.');
+        if (Auth::user()->hasRole('admin')) {
+            return redirect()->route('admin.stages.index')->with('success', 'Etapa eliminada correctamente.');
+        }else{
+            return redirect()->route('projects.show', $project->id)->with('success', 'Etapa eliminada exitosamente.');
+        }
+
     }
 }

@@ -15,7 +15,13 @@
         <p><strong>País:</strong> {{ $project->country }}</p>
         <p><strong>Dirección de Instalación:</strong> {{ $project->installation_address }}</p>
         <p><strong>Valor del Proyecto:</strong> ${{ number_format($project->project_value, 0, ',', '.') }}</p>
-        <p><strong>Fecha de Inicio:</strong> {{ $project->start_date->format('d/m/Y') }}</p>
+        <p><strong>Fecha de Inicio:</strong>
+            @if ($project->start_date)
+                {{ \Carbon\Carbon::parse($project->start_date)->format('d/m/Y') }}
+            @else
+                Fecha no disponible
+            @endif
+        </p>
         <p><strong>Estado:</strong>
             @if ($project->status == 'pendiente')
                 <span class="badge bg-warning text-dark">Pendiente</span>
@@ -42,7 +48,7 @@
                             ({{ $stage->status }})
                         </small>
                     </h5>
-                    <a href="{{ route('admin.etapas.show', ['project' => $project, 'stage' => $stage]) }}" class="btn btn-sm btn-primary">Ver Detalle de Etapa</a>
+                    <a href="{{ route('admin.stages.show', ['project' => $project, 'stage' => $stage]) }}" class="btn btn-sm btn-primary">Ver Detalle de Etapa</a>
 
                 </li>
             @endforeach
@@ -74,7 +80,7 @@
                                 <ul class="list-group">
                                     @foreach ($stage->documents as $document)
                                         <li class="list-group-item">
-                                            <a href="{{ Storage::disk('public')->url($document->path) }}" target="_blank">
+                                            <a href="{{ Storage::disk('public')->url($document->file_path) }}" target="_blank">
                                                 <strong>{{ $document->name }}</strong>
                                             </a>
                                             <br>
@@ -102,6 +108,6 @@
         <p>No hay documentos asociados a las etapas.</p>
     @endif
 
-    <a href="{{ route('admin.dashboard') }}" class="btn btn-secondary mt-4">Volver al Dashboard</a>
+    <a href="{{ route('admin.projects.index') }}" class="btn btn-secondary mt-4">Volver a Proyectos</a>
 </div>
 @endsection

@@ -49,7 +49,7 @@
                         <ul class="list-group">
                             @foreach ($stage->documents as $document)
                                 <li class="list-group-item">
-                                    <a href="{{ Storage::disk('public')->url($document->path) }}" target="_blank">
+                                    <a href="{{ Storage::disk('public')->url($document->file_path) }}" target="_blank">
                                         {{ $document->name }}
                                     </a>
                                     <form action="{{ route('admin.documents.destroy', $document) }}" method="POST" style="display: inline-block;">
