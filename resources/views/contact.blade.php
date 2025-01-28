@@ -3,78 +3,78 @@
 @section('title', 'Contacto - Enlidi')
 
 @section('content')
-<!--/header-->
-<div class="inner-banner">
-</div>
-<section class="w3l-breadcrumb">
-    <div class="container">
-        <ul class="breadcrumbs-custom-path">
-            <li><a href="{{ url('/') }}">Inicio</a></li>
-            <li class="active"><span class="fa fa-arrow-right mx-2" aria-hidden="true"></span> Contacto</li>
-        </ul>
-    </div>
-</section>
-<div class="w3l-contact-info py-5" id="contact">
-    <div class="container py-lg-5 py-md-4">
-        <div class="title text-center">
-            <h3 class="title-big">Ponte en contacto con nosotros</h3>
-            <p class="mt-2 mx-lg-5">Estamos aquí para ayudarte con todas tus necesidades de financiamiento y consultoría energética. Contáctanos para obtener más información sobre cómo podemos apoyar tus proyectos.</p>
-        </div>
-        <div class="row">
-            <div class="col-lg-6">
-                <!-- Puedes añadir cualquier información adicional aquí -->
+    <section class="py-10 bg-gray-100">
+        <div class="container mx-auto px-4">
+            <div class="text-center">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Ponte en contacto con nosotros</h2>
+                <p class="text-gray-600 leading-relaxed mx-auto max-w-xl mb-10">Estamos aquí para ayudarte con todas tus necesidades de financiamiento y consultoría energética. Contáctanos para obtener más información sobre cómo podemos apoyar tus proyectos.</p>
             </div>
-            <div class="align-self mt-lg-0 mt-md-5 mt-4">
-                <div class="contact-infos">
-                    <div class="single-contact-infos">
-                        <div class="icon-box"> <span class="fa fa-map-marker"></span></div>
-                        <div class="text-box">
-                            <h3 class="mb-1">Dirección</h3>
-                            <p>Enlidi, Carrera 23 #45-67, Manizales, Colombia</p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-white shadow-md rounded-lg p-6">
+                    <div class="flex items-start space-x-4 mb-6">
+                        <div class="flex-shrink-0">
+                            <span class="fa-stack fa-2x">
+                                <i class="fas fa-circle fa-stack-2x text-primary"></i>
+                                <i class="fas fa-map-marker fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </div>
+                        <div>
+                            <h5 class="text-lg font-semibold text-gray-800">Dirección</h5>
+                            <p class="text-gray-600">Enlidi, Carrera 23 #45-67, Manizales, Colombia</p>
                         </div>
                     </div>
-                    <div class="single-contact-infos">
-                        <div class="icon-box"> <span class="fa fa-phone"></span></div>
-                        <div class="text-box">
-                            <h3 class="mb-1">Llámanos</h3>
-                            <p><a href="tel:+57 6 123 4567">+57 6 123 4567</a></p>
+                    <div class="flex items-start space-x-4 mb-6">
+                        <div class="flex-shrink-0">
+                            <span class="fa-stack fa-2x">
+                                <i class="fas fa-circle fa-stack-2x text-primary"></i>
+                                <i class="fas fa-phone fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </div>
+                        <div>
+                            <h5 class="text-lg font-semibold text-gray-800">Llámanos</h5>
+                            <a href="tel:+5761234567" class="text-gray-600 hover:text-primary">+57 6 123 4567</a>
                         </div>
                     </div>
-                    <div class="single-contact-infos">
-                        <div class="icon-box"> <span class="fa fa-envelope"></span></div>
-                        <div class="text-box">
-                            <h3 class="mb-1">Envíanos un correo</h3>
-                            <p> <a href="mailto:info@enlidi.com">info@enlidi.com</a></p>
+                    <div class="flex items-start space-x-4">
+                        <div class="flex-shrink-0">
+                            <span class="fa-stack fa-2x">
+                                <i class="fas fa-circle fa-stack-2x text-primary"></i>
+                                <i class="fas fa-envelope fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </div>
+                        <div>
+                            <h5 class="text-lg font-semibold text-gray-800">Envíanos un correo</h5>
+                            <a href="mailto:info@enlidi.com" class="text-gray-600 hover:text-primary">info@enlidi.com</a>
                         </div>
                     </div>
                 </div>
+
+                <div class="bg-white shadow-md rounded-lg p-6">
+                    <form action="#" method="post"> {{-- Reemplaza # por la ruta correcta para enviar el formulario --}}
+                        @csrf
+                        <div class="mb-4">
+                            <label for="name" class="sr-only">Nombre</label>
+                            <input type="text" name="name" id="name" placeholder="Tu nombre" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" required>
+                        </div>
+                        <div class="mb-4">
+                            <label for="email" class="sr-only">Correo electrónico</label>
+                            <input type="email" name="email" id="email" placeholder="Tu correo electrónico" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" required>
+                        </div>
+                        <div class="mb-4">
+                            <label for="message" class="sr-only">Mensaje</label>
+                            <textarea name="message" id="message" placeholder="Tu mensaje" rows="4" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" required></textarea>
+                        </div>
+                        <div class="text-right">
+                            <button type="submit" class="bg-primary hover:bg-primary-dark text-white font-bold py-2 px-6 rounded-md transition duration-300">Enviar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="mt-10">
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d31820.584038340166!2d-75.5147135!3d5.0622745!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e476ff83f5e3b47%3A0x8c5d5bf9ef9ed6a5!2sManizales%2C%20Caldas%2C%20Colombia!5e0!3m2!1sen!2sin!4v1615464638056!5m2!1sen!2sin" class="w-full h-96 rounded-lg shadow-md" allowfullscreen="" loading="lazy"></iframe>
             </div>
         </div>
-        <div class="row mt-5">
-            <div class="col-lg-6 map">
-                <iframe
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d31820.584038340166!2d-75.5147135!3d5.0622745!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e476ff83f5e3b47%3A0x8c5d5bf9ef9ed6a5!2sManizales%2C%20Caldas%2C%20Colombia!5e0!3m2!1sen!2sin!4v1615464638056!5m2!1sen!2sin"
-                    frameborder="0" allowfullscreen=""></iframe>
-            </div>
-            <div class="col-lg-6 form-inner-cont mt-lg-0 mt-sm-5 mt-4">
-                <form action="https://sendmail.w3layouts.com/submitForm" method="post" class="signin-form">
-                    <div class="form-input">
-                        <input type="text" name="w3lName" id="w3lName" placeholder="Tu nombre">
-                    </div>
-                    <div class="form-input">
-                        <input type="email" name="w3lSender" id="w3lSender" placeholder="Tu correo electrónico"
-                            required="">
-                    </div>
-                    <div class="form-input">
-                        <textarea name="w3lMessage" id="w3lMessage" placeholder="Tu mensaje" required=""></textarea>
-                    </div>
-                    <div class="text-right">
-                        <button type="submit" class="btn btn-style btn-primary">Enviar</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- footer -->
+    </section>
 @endsection

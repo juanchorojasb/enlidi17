@@ -1,31 +1,84 @@
 @extends('layouts.admin')
 
 @section('content')
-<div class="container">
-    <h1 class="mb-4">{{ $project->name }}</h1>
+<div class="container mx-auto px-4 py-8">
+    <div class="bg-white shadow-md rounded-lg p-6">
+        <h1 class="text-2xl font-bold text-gray-800 mb-6">Proyecto: {{ $project->name }}</h1>
 
-    <p>Estado: {{ $project->status }}</p>
+        <div class="mb-6">
+            <h3 class="text-xl font-semibold text-gray-800 mb-4">Información del Proyecto</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <p class="text-gray-700 mb-2"><strong class="text-gray-900">Cliente:</strong> {{ $project->client_name }}</p>
+                    <p class="text-gray-700 mb-2"><strong class="text-gray-900">NIT:</strong> {{ $project->nit }}</p>
+                    <p class="text-gray-700 mb-2"><strong class="text-gray-900">Email:</strong> {{ $project->email }}</p>
+                    <p class="text-gray-700 mb-2"><strong class="text-gray-900">Teléfono:</strong> {{ $project->phone }}</p>
+                    <p class="text-gray-700 mb-2"><strong class="text-gray-900">Ciudad:</strong> {{ $project->city }}</p>
+                </div>
+                <div>
+                    <p class="text-gray-700 mb-2"><strong class="text-gray-900">Departamento:</strong> {{ $project->department }}</p>
+                    <p class="text-gray-700 mb-2"><strong class="text-gray-900">País:</strong> {{ $project->country }}</p>
+                    <p class="text-gray-700 mb-2"><strong class="text-gray-900">Dirección de Instalación:</strong> {{ $project->installation_address }}</p>
+                    <p class="text-gray-700 mb-2"><strong class="text-gray-900">Valor del Proyecto:</strong> ${{ number_format($project->project_value, 0, ',', '.') }}</p>
+                    <p class="text-gray-700 mb-2"><strong class="text-gray-900">Fecha de Inicio:</strong> {{ $project->start_date->format('d/m/Y') }}</p>
+                    <p class="text-gray-700 mb-2"><strong class="text-gray-900">Estado:</strong>
+                        @if ($project->status == 'En evaluación')
+                            <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-semibold">En evaluación</span>
+                        @elseif ($project->status == 'Aprobado')
+                            <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-semibold">Aprobado</span>
+                        @elseif ($project->status == 'Rechazado')
+                            <span class="bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs font-semibold">Rechazado</span>
+                        @else
+                            <span class="bg-gray-100 text-gray-800 px-2 py-1 rounded-full text-xs font-semibold">{{ $project->status }}</span>
+                        @endif
+                    </p>
+                </div>
+            </div>
+            <p class="text-gray-700 mt-4"><strong class="text-gray-900">Descripción:</strong> {{ $project->project_description }}</p>
+        </div>
 
-    <h2>Etapas</h2>
+        <h2 class="text-xl font-semibold text-gray-800 mt-8 mb-4">Etapas ({{ $project->stages->count() }})</h2>
+        @if($project->stages->isNotEmpty())
+            <ul class="space-y-4">
+                @foreach ($project->stages as $stage)
+                    <li class="bg-gray-100 p-4 rounded-lg shadow">
+                        <h5 class="text-lg font-semibold text-gray-800">{{ $stage->name }}</h5>
+                        <p class="text-sm text-gray-600 mb-2">({{ $stage->status }})</p>
+                        <a href="{{ route('admin.stages.show', ['project' => $project, 'stage' => $stage]) }}" class="bg-primary hover:bg-primary-dark text-white font-bold py-2 px-4 rounded-md text-sm inline-flex items-center">
+                            <i class="fa fa-eye mr-2"></i> Ver Detalle de Etapa
+                        </a>
+                    </li>
+                @endforeach
+            </ul>
+        @else
+            <p class="text-gray-600">No hay etapas registradas para este proyecto.</p>
+        @endif
 
-    <ul>
-        @foreach ($project->stages as $stage)
-            <li>
-                <a href="{{ route('stages.show', $stage) }}">{{ $stage->name }}</a>
-            </li>
-        @endforeach
-    </ul>
+        <h2 class="text-xl font-semibold text-gray-800 mt-8 mb-4">Documentos</h2>
+        @if($project->documents->isNotEmpty())
+            <ul class="space-y-4">
+                @foreach ($project->documents as $document)
+                    <li class="bg-gray-100 p-4 rounded-lg shadow">
+                        <h5 class="text-lg font-semibold text-gray-800">{{ $document->name }}</h5>
+                        <p class="text-sm text-gray-600 mb-2">({{ $document->mime_type }} - {{ number_format($document->size / 1024, 2) }} KB)</p>
+                        <a href="{{ Storage::disk('public')->url($document->file_path) }}" target="_blank" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md text-sm inline-flex items-center">
+                            <i class="fa fa-eye mr-2"></i> Ver Documento
+                        </a>
+                        <form action="{{ route('admin.documents.destroy', $document) }}" method="POST" class="inline-block">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-md text-xs inline-flex items-center" onclick="return confirm('¿Estás seguro de que quieres eliminar este documento?')">
+                                <i class="fa fa-trash mr-1"></i> Eliminar
+                            </button>
+                        </form>
+                    </li>
+                @endforeach
+            </ul>
+        @else
+            <p class="text-gray-600">No hay documentos asociados a este proyecto.</p>
+        @endif
 
-    <h2>Documentos</h2>
-
-    <ul>
-        @foreach ($project->stages as $stage)
-            @foreach ($stage->documents as $document)
-                <li>
-                    <a href="{{ route('documents.show', $document) }}">{{ $document->name }}</a>
-                </li>
-            @endforeach
-        @endforeach
-    </ul>
+        <a href="{{ route('admin.projects.index') }}" class="bg-secondary hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-md mt-4">Volver a Proyectos</a>
+    </div>
 </div>
 @endsection

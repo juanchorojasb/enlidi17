@@ -19,29 +19,33 @@ class ProjectController extends Controller
 
     public function index(Request $request)
     {
+        \Log::info('Accediendo a la función index del ProjectController');
+    
         $user = Auth::user();
-
-        // Filtro por estado para administradores
         $status = $request->input('status');
-
+    
         if ($user->hasRole('admin')) {
+            \Log::info('El usuario es un administrador, cargando todos los proyectos.');
             $query = Project::query();
             if ($status) {
                 $query->where('status', $status);
             }
             $projects = $query->paginate(10);
-            $view = 'admin.projects.index'; // Vista para administradores
+            $view = 'admin.projects.index';
         } else {
+            \Log::info('El usuario no es un administrador, cargando proyectos del usuario.');
             $projects = $user->projects()->paginate(10);
-            $view = 'user.projects.index'; // Vista para usuarios
+            $view = 'user.projects.index';
         }
-
+    
+        \Log::info('Proyectos cargados:', ['count' => $projects->count()]);
         return view($view, compact('projects'));
     }
+    
 
     public function create()
     {
-        // Retornar la vista para crear proyectos (para usuarios normales)
+        \Log::info('Accediendo a la función create del ProjectController');
         return view('user.projects.create');
     }
 
@@ -52,11 +56,13 @@ class ProjectController extends Controller
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'client_name' => 'required|string|max:255',
-            'nit' => 'required|string|max:255', // Validación para NIT
+            'nit' => 'required|string|max:255',
             'email' => 'required|email|max:255',
             'phone' => 'required|string|max:255',
             'city' => 'required|string|max:255',
-            'address' => 'required|string|max:255',
+            'department' => 'required|string|max:255',
+            'country' => 'required|string|max:255',
+            'installation_address' => 'required|string|max:255',
             'project_description' => 'required|string',
             'project_value' => 'required|numeric',
             'start_date' => 'required|date',
@@ -72,44 +78,20 @@ class ProjectController extends Controller
         \Log::info('Datos validados:', $validatedData);
     
         try {
-            // Guarda los archivos y obtén las rutas
-            $rutPath = $request->file('rut')->store('documents', 'public');
-            $chamberOfCommercePath = $request->file('chamber_of_commerce')->store('documents', 'public');
-            $financialStatementsPath = $request->file('financial_statements')->store('documents', 'public');
-            $legalRepresentativeIdPath = $request->file('legal_representative_id')->store('documents', 'public');
-            $creditRequestPath = $request->file('credit_request')->store('documents', 'public');
-            $projectInformationPath = $request->file('project_information')->store('documents', 'public');
-            $approvalQueryPath = $request->file('approval_query')->store('documents', 'public');
-    
-            \Log::info('Rutas de archivos:', [
-                'rut' => $rutPath,
-                'chamber_of_commerce' => $chamberOfCommercePath,
-                'financial_statements' => $financialStatementsPath,
-                'legal_representative_id' => $legalRepresentativeIdPath,
-                'credit_request' => $creditRequestPath,
-                'project_information' => $projectInformationPath,
-                'approval_query' => $approvalQueryPath,
-            ]);
-    
             // Crea el proyecto con el estado inicial "En evaluación"
             $project = auth()->user()->projects()->create([
                 'name' => $validatedData['name'],
                 'client_name' => $validatedData['client_name'],
-                'nit' => $validatedData['nit'], // Asignación del NIT
+                'nit' => $validatedData['nit'],
                 'email' => $validatedData['email'],
                 'phone' => $validatedData['phone'],
                 'city' => $validatedData['city'],
-                'address' => $validatedData['address'],
+                'department' => $validatedData['department'],
+                'country' => $validatedData['country'],
+                'installation_address' => $validatedData['installation_address'],
                 'project_description' => $validatedData['project_description'],
                 'project_value' => $validatedData['project_value'],
                 'start_date' => $validatedData['start_date'],
-                'rut_path' => $rutPath,
-                'chamber_of_commerce_path' => $chamberOfCommercePath,
-                'financial_statements_path' => $financialStatementsPath,
-                'legal_representative_id_path' => $legalRepresentativeIdPath,
-                'credit_request_path' => $creditRequestPath,
-                'project_information_path' => $projectInformationPath,
-                'approval_query_path' => $approvalQueryPath,
                 'status' => 'En evaluación',
             ]);
     
@@ -117,48 +99,40 @@ class ProjectController extends Controller
     
             // Crea las dos etapas del proyecto
             $project->stages()->createMany([
-                ['name' => 'Etapa 1: Aprobación', 'status' => 'En revisión'],
-                ['name' => 'Etapa 2: Financiación', 'status' => 'Pendiente'],
+                ['name' => 'Etapa 1: Aprobación', 'status' => 'En revisión', 'tipo' => 'usuario'],
+                ['name' => 'Etapa 2: Financiación', 'status' => 'Pendiente', 'tipo' => 'usuario'],
             ]);
     
             \Log::info('Etapas creadas para el proyecto: ' . $project->id);
     
-            // Crear documentos y asociarlos al proyecto
-            $documentPaths = [
-                'rut_path' => $rutPath,
-                'chamber_of_commerce_path' => $chamberOfCommercePath,
-                'financial_statements_path' => $financialStatementsPath,
-                'legal_representative_id_path' => $legalRepresentativeIdPath,
-                'credit_request_path' => $creditRequestPath,
-                'project_information_path' => $projectInformationPath,
-                'approval_query_path' => $approvalQueryPath,
+            // Subir y asociar documentos
+            $documentFields = [
+                'rut', 'chamber_of_commerce', 'financial_statements',
+                'legal_representative_id', 'credit_request',
+                'project_information', 'approval_query'
             ];
     
-            foreach ($documentPaths as $fieldName => $path) {
-                $file = $request->file(str_replace('_path', '', $fieldName));
-                if ($file) {
-                    \Log::info('Procesando archivo:', ['field' => $fieldName, 'path' => $path, 'originalName' => $file->getClientOriginalName()]);
-                    $originalName = $file->getClientOriginalName();
+            foreach ($documentFields as $field) {
+                if ($request->hasFile($field)) {
+                    $file = $request->file($field);
+                    $path = $file->store('documents', 'public');
     
-                    $projectInstance = Project::findOrFail($project->id);
-                    $projectInstance->documents()->create([
+                    $document = new Document([
                         'file_path' => $path,
-                        'name' => $originalName,
-                        'mime_type' => $file->getClientMimeType(),
+                        'name' => $file->getClientOriginalName(),
+                        'mime_type' => $file->getMimeType(),
                         'size' => $file->getSize(),
                     ]);
+    
+                    $project->documents()->save($document);
+                    \Log::info('Documento creado y asociado:', ['project_id' => $project->id, 'document' => $document->toArray()]);
                 }
             }
-    
-            \Log::info('Documentos creados y asociados al proyecto: ' . $project->id);
     
             // Redirigir a la vista de detalles del proyecto
             return redirect()->route('projects.show', $project->id)
                 ->with('success', 'Proyecto creado exitosamente.');
     
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            \Log::error('Error: No se pudo encontrar el proyecto después de crearlo: ' . $e->getMessage());
-            return redirect()->back()->withInput()->with('error', 'Error al crear el proyecto. No se pudo encontrar el proyecto después de crearlo.');
         } catch (\Exception $e) {
             \Log::error('Error al crear el proyecto: ' . $e->getMessage());
             return redirect()->back()->withInput()->with('error', 'Error al crear el proyecto: ' . $e->getMessage());
@@ -169,19 +143,19 @@ class ProjectController extends Controller
 
     public function show(Project $project)
     {
-        // Permitir que los administradores vean cualquier proyecto
+        \Log::info('Accediendo a la función show del ProjectController', ['project_id' => $project->id]);
+
         if (Auth::user()->hasRole('admin')) {
             return view('admin.projects.show', compact('project'));
         }
 
-        // Para usuarios normales, verificar que el proyecto les pertenezca
         if ($project->user_id == Auth::user()->id) {
             return view('user.projects.show', compact('project'));
         }
 
+        \Log::warning('Intento de acceso no autorizado al proyecto', ['project_id' => $project->id, 'user_id' => Auth::id()]);
         abort(403, 'No tienes permiso para ver este proyecto.');
     }
-
     public function edit(Project $project)
     {
         // Asegúrate de que el usuario autenticado puede editar este proyecto
@@ -272,7 +246,7 @@ class ProjectController extends Controller
         ]);
 
         $project->delete();
-        return redirect()->route('projects.index')->with('success', 'Proyecto eliminado correctamente.');
+        return redirect()->route('user.projects.index')->with('success', 'Proyecto eliminado correctamente.');
     }
 
     public function approve(Project $project)

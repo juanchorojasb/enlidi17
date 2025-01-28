@@ -3,57 +3,34 @@
 @section('title', 'Dashboard - Admin')
 
 @section('content')
- <div class="graphs">
-     <div class="col_3">
-          <div class="col-md-3 widget widget1">
-              <div class="r3_counter_box">
-                  <i class="pull-left fa fa-pie-chart icon-rounded"></i>
-                  <div class="stats">
-                      <h5><strong>{{ $pendingProjectsCount ?? 0 }}</strong></h5>
-                      <span>Proyectos Pendientes</span>
-                  </div>
-              </div>
-          </div>
-          <div class="col-md-3 widget widget1">
-              <div class="r3_counter_box">
-                  <i class="pull-left fa fa-laptop user1 icon-rounded"></i>
-                  <div class="stats">
-                      <h5><strong>{{ $approvedProjectsCount ?? 0 }}</strong></h5>
-                      <span>Proyectos Aprobados</span>
-                  </div>
-              </div>
-          </div>
-          <div class="col-md-3 widget widget1">
-              <div class="r3_counter_box">
-                  <i class="pull-left fa fa-money user2 icon-rounded"></i>
-                  <div class="stats">
-                      <h5><strong>{{ $rejectedProjectsCount ?? 0 }}</strong></h5>
-                      <span>Proyectos Rechazados</span>
-                  </div>
-              </div>
-          </div>
-          <div class="col-md-3 widget">
-              <div class="r3_counter_box">
-                  <i class="pull-left fa fa-dollar icon-rounded"></i>
-                  <div class="stats">
-                      <h5><strong>{{ $allProjectsCount ?? 0 }}</strong></h5>
-                      <span>Total de Proyectos</span>
-                  </div>
-              </div>
-          </div>
-          <div class="clearfix"> </div>
-      </div>
-     <div class="row mt-3">
-         <div class="col-md-12">
-             <div class="card">
-                 <div class="card-body">
-                     <h5 class="card-title">Todos los Proyectos</h5>
-                     <p class="card-text">
-                         <a href="{{ route('admin.projects.index') }}" class="btn btn-primary">Ver Todos Los Proyectos</a>
-                     </p>
-                 </div>
-             </div>
-         </div>
-     </div>
- </div>
+<div class="py-12">
+    <div class="container mx-auto px-4">
+        <h1 class="text-3xl font-bold text-gray-800 mb-8">Dashboard Administrativo</h1>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+            <x-dashboard-stat-card icon="fa-hourglass-half" title="Proyectos Pendientes" :value="$pendingProjectsCount ?? 0" color="text-yellow-500" iconBg="bg-yellow-100" :link="route('admin.projects.index', ['status' => 'En evaluación'])" />
+            <x-dashboard-stat-card icon="fa-check" title="Proyectos Aprobados" :value="$approvedProjectsCount ?? 0" color="text-green-500" iconBg="bg-green-100" :link="route('admin.projects.index', ['status' => 'Aprobado'])" />
+            <x-dashboard-stat-card icon="fa-times" title="Proyectos Rechazados" :value="$rejectedProjectsCount ?? 0" color="text-red-500" iconBg="bg-red-100" :link="route('admin.projects.index', ['status' => 'Rechazado'])" />
+            <x-dashboard-stat-card icon="fa-folder" title="Total de Proyectos" :value="$allProjectsCount ?? 0" color="text-blue-500" iconBg="bg-blue-100" :link="route('admin.projects.index')" />
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-white shadow rounded-lg p-6">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Proyectos</h2>
+                <p class="text-gray-600">Accede y gestiona todos los proyectos.</p>
+                <a href="{{ route('admin.projects.index') }}" class="mt-4 inline-block bg-primary hover:bg-primary-dark text-white font-bold py-2 px-4 rounded-md">
+                    Ver Todos Los Proyectos
+                </a>
+            </div>
+
+            <div class="bg-white shadow rounded-lg p-6">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Stages</h2>
+                <p class="text-gray-600">Administra y supervisa todos los stages. ({{ $allStagesCount ?? 0 }}) en total</p>
+                <a href="{{ route('admin.stages.index') }}" class="mt-4 inline-block bg-primary hover:bg-primary-dark text-white font-bold py-2 px-4 rounded-md">
+                    Administrar Stages
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
