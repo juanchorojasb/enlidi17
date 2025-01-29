@@ -41,7 +41,7 @@
                                     <a href="{{ route('projects.show', $project->id) }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md text-xs inline-flex items-center mr-2">
                                         <i class="fa fa-eye mr-1"></i> Ver
                                     </a>
-                                    <a href="{{ route('projects.edit', $project->id) }}" class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded-md text-xs inline-flex items-center mr-2">
+                                    <a href="{{ route('user.projects.edit', $project->id) }}" class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded-md text-xs inline-flex items-center mr-2">
                                         <i class="fa fa-pencil mr-1"></i> Editar
                                     </a>
                                     <form action="{{ route('projects.destroy', $project->id) }}" method="POST" class="inline-block">
