@@ -5,7 +5,7 @@
     <div class="bg-white shadow-md rounded-lg p-6">
         <h1 class="text-2xl font-bold text-gray-800 mb-6">Editar Proyecto</h1>
 
-        <form action="{{ route('projects.update', $project) }}" method="POST" enctype="multipart/form-data">
+        <form action="{{ route('user.projects.update', $project) }}" method="POST" enctype="multipart/form-data">
             @csrf
             @method('PUT')
 
@@ -111,7 +111,7 @@
 
             <div class="mt-6">
                 <button type="submit" class="bg-primary hover:bg-primary-dark text-white font-bold py-2 px-4 rounded-md">Actualizar Proyecto</button>
-                <a href="{{ route('projects.index') }}" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-md">Cancelar</a>
+                <a href="{{ route('user.projects.index') }}" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-md">Cancelar</a>
             </div>
 
         </form>

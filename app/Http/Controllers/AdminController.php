@@ -23,7 +23,6 @@ class AdminController extends Controller
      */
     public function dashboard()
     {
-        \Log::info('Accediendo al dashboard del administrador');
         // Obtiene estadísticas para el dashboard
         $pendingProjectsCount = Project::where('status', 'En evaluación')->count();
         $approvedProjectsCount = Project::where('status', 'Aprobado')->count();
@@ -32,13 +31,14 @@ class AdminController extends Controller
         $allStagesCount = Stage::count(); // Obtiene el conteo total de stages
 
         // Retorna la vista "admin.dashboard" con las estadísticas
-        return view('admin.dashboard', compact(
-            'pendingProjectsCount',
-            'approvedProjectsCount',
-            'rejectedProjectsCount',
-            'allProjectsCount',
-            'allStagesCount'
-        ));
+        return view('admin.dashboard', [
+            'pendingProjectsCount' => $pendingProjectsCount,
+            'approvedProjectsCount' => $approvedProjectsCount,
+            'rejectedProjectsCount' => $rejectedProjectsCount,
+            'allProjectsCount' => $allProjectsCount,
+            'allStagesCount' => $allStagesCount,
+            'title' => 'Dashboard de Administrador'
+        ]);
     }
 
     /**

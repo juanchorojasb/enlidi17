@@ -45,7 +45,7 @@
                         <li class="bg-gray-100 p-4 rounded-lg shadow">
                             <h5 class="text-lg font-semibold text-gray-800">{{ $stage->name }}</h5>
                             <p class="text-sm text-gray-600 mb-2">({{ $stage->status }})</p>
-                            <a href="{{ route('projects.stages.show', ['project' => $project, 'stage' => $stage]) }}" class="bg-primary hover:bg-primary-dark text-white font-bold py-2 px-4 rounded-md text-sm inline-flex items-center">
+                            <a href="{{ route('user.stages.show', ['project' => $project, 'stage' => $stage]) }}" class="bg-primary hover:bg-primary-dark text-white font-bold py-2 px-4 rounded-md text-sm inline-flex items-center">
                                 <i class="fa fa-eye mr-2"></i> Ver Etapa
                             </a>
                         </li>

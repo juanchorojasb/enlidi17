@@ -75,9 +75,9 @@ Route::middleware('auth')->group(function () {
     Route::middleware(['role:user'])->name('user.')->group(function () {
         Route::get('/dashboard', [UserController::class, 'dashboard'])->name('dashboard');
         // Rutas para proyectos de usuario
-        Route::resource('projects', ProjectController::class)->except(['edit', 'update', 'destroy']);
+        Route::resource('projects', ProjectController::class);
         // Rutas para la gestión de stages por parte del usuario
-        Route::resource('projects.stages', StageController::class)->except(['index', 'show', 'destroy']);
+        Route::resource('projects.stages', StageController::class)->except(['index', 'destroy']);
         Route::get('/projects/{project}/stages/{stage}', [StageController::class, 'show'])->name('stages.show');
         Route::delete('/projects/{project}/stages/{stage}', [StageController::class, 'destroy'])->name('stages.destroy');
         // Rutas para la gestión de documentos de usuario

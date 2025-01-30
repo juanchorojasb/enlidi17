@@ -22,23 +22,21 @@ class StageController extends Controller
      * Si es user y es dueño del proyecto, retorna la vista de user.
      * Caso contrario, lanza 403.
      */
-    public function show(Stage $stage)
-    {
-        // Cargar los documentos asociados a la etapa
-        $documents = $stage->documents;
+    public function show(Project $project, Stage $stage)
+{
+    \Log::info('Accediendo a user.stages.show', ['project_id' => $project->id, 'stage_id' => $stage->id]);
 
-        // Si el usuario tiene rol admin
-        if (Auth::user()->hasRole('admin')) {
-            return view('admin.stages.show', compact('stage', 'documents'));
-        }
-
-        // De lo contrario, asumimos que es usuario "normal"
-        // Verificamos si la etapa pertenece al proyecto que creó el usuario actual
-        if ($stage->project && $stage->project->user_id === Auth::id()) {
-            return view('user.stages.show', compact('stage', 'documents'));
-        }
-
-        // Si no es admin ni dueño de la etapa, retornamos error 403
+    // Verificar permisos:
+    // - Admin puede ver cualquier etapa
+    // - User solo si es dueño del proyecto
+    if (!Auth::user()->hasRole('admin') && $project->user_id !== Auth::id()) {
         abort(403, 'No tienes permiso para ver esta etapa.');
     }
+    // Asegúrate de que la etapa pertenece al proyecto correcto.
+    if ($stage->project_id !== $project->id) {
+        abort(404, 'Etapa no encontrada.');
+    }
+    
+    return view('user.stages.show', compact('stage', 'project'));
+}
 }

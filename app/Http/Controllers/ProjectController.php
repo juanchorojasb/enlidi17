@@ -19,29 +19,27 @@ class ProjectController extends Controller
 
     public function index(Request $request)
     {
-        \Log::info('Accediendo a la función index del ProjectController');
-    
         $user = Auth::user();
+    
+        // Filtro por estado para administradores
         $status = $request->input('status');
     
         if ($user->hasRole('admin')) {
-            \Log::info('El usuario es un administrador, cargando todos los proyectos.');
             $query = Project::query();
             if ($status) {
                 $query->where('status', $status);
             }
             $projects = $query->paginate(10);
-            $view = 'admin.projects.index';
+            $view = 'admin.projects.index'; // Vista para administradores
+            $title = "Proyectos"; // Define el título para la vista de administrador
         } else {
-            \Log::info('El usuario no es un administrador, cargando proyectos del usuario.');
             $projects = $user->projects()->paginate(10);
-            $view = 'user.projects.index';
+            $view = 'user.projects.index'; // Vista para usuarios
+            $title = "Tus Proyectos"; // Define el título para la vista de usuario
         }
     
-        \Log::info('Proyectos cargados:', ['count' => $projects->count()]);
-        return view($view, compact('projects'));
+        return view($view, compact('projects', 'title')); // Pasa la variable $title a la vista
     }
-    
 
     public function create()
     {
@@ -143,17 +141,17 @@ class ProjectController extends Controller
 
     public function show(Project $project)
     {
-        \Log::info('Accediendo a la función show del ProjectController', ['project_id' => $project->id]);
-
+        // Permitir que los administradores vean cualquier proyecto
         if (Auth::user()->hasRole('admin')) {
-            return view('admin.projects.show', compact('project'));
+            $project->load(['stages', 'documents']); // Carga las relaciones necesarias
+            return view('admin.projects.show', compact('project'), ['title' => 'Detalles del Proyecto']);
         }
-
+    
+        // Para usuarios normales, verificar que el proyecto les pertenezca
         if ($project->user_id == Auth::user()->id) {
             return view('user.projects.show', compact('project'));
         }
-
-        \Log::warning('Intento de acceso no autorizado al proyecto', ['project_id' => $project->id, 'user_id' => Auth::id()]);
+    
         abort(403, 'No tienes permiso para ver este proyecto.');
     }
     public function edit(Project $project)
@@ -233,19 +231,19 @@ class ProjectController extends Controller
         if (Auth::user()->id !== $project->user_id) {
             abort(403, 'No tienes permiso para eliminar este proyecto.');
         }
-
-        // Eliminar los archivos asociados al proyecto antes de eliminar el proyecto
-        Storage::disk('public')->delete([
-            $project->rut_path,
-            $project->chamber_of_commerce_path,
-            $project->financial_statements_path,
-            $project->legal_representative_id_path,
-            $project->credit_request_path,
-            $project->project_information_path,
-            $project->approval_query_path,
-        ]);
-
+    
+        // Eliminar los documentos asociados al proyecto a través de la relación
+        foreach ($project->documents as $document) {
+            Storage::disk('public')->delete($document->file_path);
+            $document->delete();
+        }
+    
+        // Eliminar las etapas asociadas al proyecto
+        $project->stages()->delete();
+    
+        // Finalmente, eliminar el proyecto
         $project->delete();
+    
         return redirect()->route('user.projects.index')->with('success', 'Proyecto eliminado correctamente.');
     }
 
