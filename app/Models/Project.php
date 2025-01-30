@@ -34,7 +34,7 @@ class Project extends Model
      * @var array
      */
     protected $casts = [
-        'start_date' => 'date:d/m/Y', // Formato de fecha personalizado
+        'start_date' => 'date:d/m/Y',
     ];
 
     /**

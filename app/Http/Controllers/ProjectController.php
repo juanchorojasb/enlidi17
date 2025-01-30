@@ -50,7 +50,7 @@ class ProjectController extends Controller
     public function store(Request $request)
     {
         \Log::info('Inicio del método store - Datos recibidos:', $request->all());
-    
+
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'client_name' => 'required|string|max:255',
@@ -72,9 +72,9 @@ class ProjectController extends Controller
             'project_information' => 'required|file|max:10240|mimes:pdf,doc,docx,xls,xlsx,zip,jpg,jpeg,png',
             'approval_query' => 'required|file|max:10240|mimes:pdf,doc,docx,xls,xlsx,zip,jpg,jpeg,png',
         ]);
-    
+
         \Log::info('Datos validados:', $validatedData);
-    
+
         try {
             // Crea el proyecto con el estado inicial "En evaluación"
             $project = auth()->user()->projects()->create([
@@ -92,45 +92,47 @@ class ProjectController extends Controller
                 'start_date' => $validatedData['start_date'],
                 'status' => 'En evaluación',
             ]);
-    
+
             \Log::info('Proyecto creado:', $project->toArray());
-    
+
             // Crea las dos etapas del proyecto
             $project->stages()->createMany([
                 ['name' => 'Etapa 1: Aprobación', 'status' => 'En revisión', 'tipo' => 'usuario'],
                 ['name' => 'Etapa 2: Financiación', 'status' => 'Pendiente', 'tipo' => 'usuario'],
             ]);
-    
+
             \Log::info('Etapas creadas para el proyecto: ' . $project->id);
-    
+
             // Subir y asociar documentos
             $documentFields = [
                 'rut', 'chamber_of_commerce', 'financial_statements',
                 'legal_representative_id', 'credit_request',
                 'project_information', 'approval_query'
             ];
-    
+
             foreach ($documentFields as $field) {
                 if ($request->hasFile($field)) {
                     $file = $request->file($field);
                     $path = $file->store('documents', 'public');
-    
+
                     $document = new Document([
                         'file_path' => $path,
                         'name' => $file->getClientOriginalName(),
                         'mime_type' => $file->getMimeType(),
                         'size' => $file->getSize(),
                     ]);
-    
+
                     $project->documents()->save($document);
                     \Log::info('Documento creado y asociado:', ['project_id' => $project->id, 'document' => $document->toArray()]);
                 }
             }
-    
+
+            \Log::info('Documentos creados y asociados al proyecto: ' . $project->id);
+
             // Redirigir a la vista de detalles del proyecto
-            return redirect()->route('projects.show', $project->id)
+            return redirect()->route('user.projects.show', $project->id)
                 ->with('success', 'Proyecto creado exitosamente.');
-    
+
         } catch (\Exception $e) {
             \Log::error('Error al crear el proyecto: ' . $e->getMessage());
             return redirect()->back()->withInput()->with('error', 'Error al crear el proyecto: ' . $e->getMessage());

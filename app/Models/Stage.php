@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Stage extends Model
 {
@@ -17,16 +18,15 @@ class Stage extends Model
     protected $fillable = [
         'name',
         'project_id',
-        'status', 
+        'status',
+        'tipo', // Asegúrate de que este campo exista en tu tabla stages si es necesario.
     ];
 
-    public function project()
+    /**
+     * Define the relationship to the Project model.
+     */
+    public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class);
-    }
-
-    public function documents()
-    {
-        return $this->hasMany(Document::class);
     }
 }

@@ -80,6 +80,9 @@ Route::middleware('auth')->group(function () {
         Route::resource('projects.stages', StageController::class)->except(['index', 'destroy']);
         Route::get('/projects/{project}/stages/{stage}', [StageController::class, 'show'])->name('stages.show');
         Route::delete('/projects/{project}/stages/{stage}', [StageController::class, 'destroy'])->name('stages.destroy');
+        //Rutas para la Etapa 2: Financiación
+        Route::get('/projects/{project}/stages/{stage}/financiacion', [StageController::class, 'financiacionForm'])->name('projects.stages.financiacion');
+        Route::post('/projects/{project}/stages/{stage}/financiacion', [StageController::class, 'financiacionUpdate'])->name('projects.stages.financiacion.update');
         // Rutas para la gestión de documentos de usuario
         Route::resource('documents', DocumentController::class)->except(['show']);
         Route::get('/documents/{document}', [DocumentController::class, 'show'])->name('documents.show');

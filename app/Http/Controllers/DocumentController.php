@@ -64,25 +64,31 @@ class DocumentController extends Controller
         \Log::info('Documento creado:', $document->toArray());
 
         return redirect()
-            ->route('documents.index')
+            ->route('user.documents.index')
             ->with('success', 'Documento subido correctamente.');
     }
 
     public function show(Document $document)
     {
+        \Log::info('Intentando mostrar documento:', ['id' => $document->id, 'file_path' => $document->file_path]);
+
         // Verificar si el usuario es dueño del proyecto o es admin
         if (Auth::id() !== $document->project->user_id && !Auth::user()->hasRole('admin')) {
+            \Log::warning('Intento de acceso no autorizado al documento', ['user_id' => Auth::id(), 'document_id' => $document->id]);
             abort(403, 'No tienes permiso para ver este documento.');
         }
 
-        $filePath = storage_path('app/public/' . $document->file_path);
+        // Construir la ruta completa al archivo en el disco público
+        $filePath = public_path(Storage::url($document->file_path));
+        \Log::info('Ruta completa del archivo a mostrar:', ['filePath' => $filePath]);
 
+        // Verificar si el archivo existe
         if (!file_exists($filePath)) {
-            \Log::error('Archivo no encontrado: ' . $filePath);
-            abort(404, 'Archivo no encontrado.');
+            \Log::error('Archivo no encontrado en la ruta especificada.', ['filePath' => $filePath]);
+            abort(404, 'El archivo no se encuentra en el servidor.');
         }
 
-        // Intentar abrir el archivo
+        // Devolver el archivo como una respuesta
         try {
             return response()->file($filePath, [
                 'Content-Type' => $document->mime_type,
@@ -136,7 +142,7 @@ class DocumentController extends Controller
         $document->save();
 
         return redirect()
-            ->route('documents.index')
+            ->route('user.documents.index')
             ->with('success', 'Documento actualizado correctamente.');
     }
 
@@ -151,7 +157,7 @@ class DocumentController extends Controller
         $document->delete();
 
         return redirect()
-            ->route('documents.index')
+            ->route('user.documents.index')
             ->with('success', 'Documento eliminado correctamente.');
     }
 }

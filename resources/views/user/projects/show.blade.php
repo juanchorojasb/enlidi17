@@ -48,6 +48,12 @@
                             <a href="{{ route('user.stages.show', ['project' => $project, 'stage' => $stage]) }}" class="bg-primary hover:bg-primary-dark text-white font-bold py-2 px-4 rounded-md text-sm inline-flex items-center">
                                 <i class="fa fa-eye mr-2"></i> Ver Etapa
                             </a>
+                            {{--  Añadir el enlace a la etapa de financiación --}}
+                            @if ($stage->name == 'Etapa 2: Financiación' && $stage->status == 'En revisión')
+                                <a href="{{ route('user.projects.stages.financiacion', ['project' => $project, 'stage' => $stage]) }}" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-md text-sm inline-flex items-center">
+                                    <i class="fa fa-money mr-2"></i> Completar Financiación
+                                </a>
+                            @endif
                         </li>
                     @endforeach
                 </ul>
