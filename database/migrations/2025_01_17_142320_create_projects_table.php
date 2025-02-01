@@ -14,9 +14,19 @@ return new class extends Migration
         Schema::create('projects', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->foreignId('user_id')->constrained()->onDelete('cascade'); 
-            $table->string('status'); // Puedes usar un enum o una cadena para el estado
-            // ... otros campos del formulario de proyecto
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->string('status')->default('En evaluación');
+            $table->string('client_name');
+            $table->string('nit');
+            $table->string('email');
+            $table->string('phone');
+            $table->string('city');
+            $table->string('department');
+            $table->string('country');
+            $table->string('installation_address');
+            $table->text('project_description');
+            $table->decimal('project_value', 15, 2);
+            $table->date('start_date');
             $table->timestamps();
         });
     }

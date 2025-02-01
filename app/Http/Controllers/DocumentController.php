@@ -71,23 +71,21 @@ class DocumentController extends Controller
     public function show(Document $document)
     {
         \Log::info('Intentando mostrar documento:', ['id' => $document->id, 'file_path' => $document->file_path]);
-
+    
         // Verificar si el usuario es dueño del proyecto o es admin
         if (Auth::id() !== $document->project->user_id && !Auth::user()->hasRole('admin')) {
             \Log::warning('Intento de acceso no autorizado al documento', ['user_id' => Auth::id(), 'document_id' => $document->id]);
             abort(403, 'No tienes permiso para ver este documento.');
         }
-
-        // Construir la ruta completa al archivo en el disco público
-        $filePath = public_path(Storage::url($document->file_path));
+    
+        $filePath = storage_path('app/public/' . $document->file_path);
         \Log::info('Ruta completa del archivo a mostrar:', ['filePath' => $filePath]);
-
-        // Verificar si el archivo existe
+    
         if (!file_exists($filePath)) {
             \Log::error('Archivo no encontrado en la ruta especificada.', ['filePath' => $filePath]);
             abort(404, 'El archivo no se encuentra en el servidor.');
         }
-
+    
         // Devolver el archivo como una respuesta
         try {
             return response()->file($filePath, [
@@ -121,7 +119,7 @@ class DocumentController extends Controller
         $request->validate([
             'name'       => 'required|string|max:255',
             'project_id' => 'required|exists:projects,id',
-            'file_path'  => 'nullable|file|max:51200', // 50MB
+            'file'       => 'nullable|file|max:51200', // 50MB, cambiado a 'file'
         ]);
 
         $project = Project::findOrFail($request->project_id);
@@ -129,14 +127,20 @@ class DocumentController extends Controller
             abort(403, 'No tienes permiso para asignar el documento a este proyecto.');
         }
 
-        if ($request->hasFile('file_path')) {
+        // Si hay archivo nuevo, se sube y se elimina el anterior
+        if ($request->hasFile('file')) { // Cambiado a 'file'
+            // Elimina el archivo anterior
             Storage::disk('public')->delete($document->file_path);
-            $path = $request->file('file_path')->store('documents', 'public');
+
+            // Sube el nuevo
+            $path = $request->file('file')->store('documents', 'public'); // Usar 'file'
+
             $document->file_path  = $path;
-            $document->mime_type = $request->file('file_path')->getClientMimeType();
-            $document->size      = $request->file('file_path')->getSize();
+            $document->mime_type = $request->file('file')->getClientMimeType(); // Usar 'file'
+            $document->size      = $request->file('file')->getSize(); // Usar 'file'
         }
 
+        // Actualiza los demás campos
         $document->name       = $request->input('name');
         $document->project_id = $project->id;
         $document->save();
@@ -153,7 +157,10 @@ class DocumentController extends Controller
             abort(403, 'No tienes permiso para eliminar este documento.');
         }
 
+        // Elimina el archivo del storage
         Storage::disk('public')->delete($document->file_path);
+
+        // Elimina el registro
         $document->delete();
 
         return redirect()

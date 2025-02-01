@@ -20,6 +20,7 @@
             <p class="text-gray-700 font-bold mb-2">Nombre de la Etapa:</p>
             <p class="text-gray-600">{{ $stage->name }}</p>
         </div>
+        
 
         <div class="mb-4">
             <p class="text-gray-700 font-bold mb-2">Estado:</p>
