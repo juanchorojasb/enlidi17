@@ -49,106 +49,108 @@ class ProjectController extends Controller
     }
 
     public function store(Request $request)
-{
-    \Log::info('Inicio del método store - Datos recibidos:', $request->all());
-
-    $validatedData = $request->validate([
-        'name' => 'required|string|max:255',
-        'client_name' => 'required|string|max:255',
-        'nit' => 'required|string|max:255',
-        'email' => 'required|email|max:255',
-        'phone' => 'required|string|max:255',
-        'city' => 'required|string|max:255',
-        'department' => 'required|string|max:255',
-        'country' => 'required|string|max:255',
-        'installation_address' => 'required|string|max:255',
-        'project_description' => 'required|string',
-        'project_value' => 'required|numeric',
-        'start_date' => 'required|date',
-        'rut' => 'required|file|max:10240|mimes:pdf,doc,docx,xls,xlsx,zip,jpg,jpeg,png',
-        'chamber_of_commerce' => 'required|file|max:10240|mimes:pdf,doc,docx,xls,xlsx,zip,jpg,jpeg,png',
-        'financial_statements' => 'required|file|max:10240|mimes:pdf,doc,docx,xls,xlsx,zip,jpg,jpeg,png',
-        'legal_representative_id' => 'required|file|max:10240|mimes:pdf,doc,docx,xls,xlsx,zip,jpg,jpeg,png',
-        'credit_request' => 'required|file|max:10240|mimes:pdf,doc,docx,xls,xlsx,zip,jpg,jpeg,png',
-        'project_information' => 'required|file|max:10240|mimes:pdf,doc,docx,xls,xlsx,zip,jpg,jpeg,png',
-        'approval_query' => 'required|file|max:10240|mimes:pdf,doc,docx,xls,xlsx,zip,jpg,jpeg,png',
-    ]);
-
-    \Log::info('Datos validados:', $validatedData);
-
-    try {
-        // Crea el proyecto con el estado inicial "En evaluación"
-        $project = auth()->user()->projects()->create([
-            'name' => $validatedData['name'],
-            'client_name' => $validatedData['client_name'],
-            'nit' => $validatedData['nit'],
-            'email' => $validatedData['email'],
-            'phone' => $validatedData['phone'],
-            'city' => $validatedData['city'],
-            'department' => $validatedData['department'],
-            'country' => $validatedData['country'],
-            'installation_address' => $validatedData['installation_address'],
-            'project_description' => $validatedData['project_description'],
-            'project_value' => $validatedData['project_value'],
-            'start_date' => $validatedData['start_date'],
-            'status' => 'En evaluación',
+    {
+        \Log::info('Inicio del método store - Datos recibidos:', $request->all());
+    
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
+            'client_name' => 'required|string|max:255',
+            'nit' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'phone' => 'required|string|max:255',
+            'city' => 'required|string|max:255',
+            'department' => 'required|string|max:255',
+            'country' => 'required|string|max:255',
+            'installation_address' => 'required|string|max:255',
+            'project_description' => 'required|string',
+            'project_value' => 'required|numeric',
+            'start_date' => 'required|date',
+            'rut' => 'required|file|max:10240|mimes:pdf,doc,docx,xls,xlsx,zip,jpg,jpeg,png',
+            'chamber_of_commerce' => 'required|file|max:10240|mimes:pdf,doc,docx,xls,xlsx,zip,jpg,jpeg,png',
+            'financial_statements' => 'required|file|max:10240|mimes:pdf,doc,docx,xls,xlsx,zip,jpg,jpeg,png',
+            'legal_representative_id' => 'required|file|max:10240|mimes:pdf,doc,docx,xls,xlsx,zip,jpg,jpeg,png',
+            'credit_request' => 'required|file|max:10240|mimes:pdf,doc,docx,xls,xlsx,zip,jpg,jpeg,png',
+            'project_information' => 'required|file|max:10240|mimes:pdf,doc,docx,xls,xlsx,zip,jpg,jpeg,png',
+            'approval_query' => 'required|file|max:10240|mimes:pdf,doc,docx,xls,xlsx,zip,jpg,jpeg,png',
         ]);
-
-        \Log::info('Proyecto creado:', $project->toArray());
-
-        // Crea las dos etapas del proyecto
-        $project->stages()->createMany([
-            ['name' => 'Etapa 1: Aprobación', 'status' => 'En revisión', 'tipo' => 'usuario'],
-            ['name' => 'Etapa 2: Financiación', 'status' => 'Pendiente', 'tipo' => 'usuario'],
-        ]);
-
-        \Log::info('Etapas creadas para el proyecto: ' . $project->id);
-
-        // Subir y asociar documentos
-        $documentFields = [
-            'rut', 'chamber_of_commerce', 'financial_statements',
-            'legal_representative_id', 'credit_request',
-            'project_information', 'approval_query'
-        ];
-
-        foreach ($documentFields as $field) {
-            if ($request->hasFile($field)) {
-                $file = $request->file($field);
-                $path = $file->store('documents', 'public');
-                \Log::info('Archivo subido:', ['field' => $field, 'path' => $path]);
-
-                // Obtener la extensión del archivo
-                $extension = $file->getClientOriginalExtension();
-
-                // Limpiar el nombre del archivo para la base de datos
-                $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
-                $originalName = preg_replace('/[^a-zA-Z0-9\s]/', '', $originalName);
-                $originalName = Str::limit($originalName, 100, ''); // Limitar a 100 caracteres
-
-                // Añadir la extensión al nombre del archivo que se guardará en la base de datos
-                $nameForDatabase = $originalName . '.' . $extension;
-
-                $document = new Document([
-                    'file_path' => $path,
-                    'name' => $nameForDatabase, // Usar el nombre original del archivo
-                    'mime_type' => $file->getMimeType(),
-                    'size' => $file->getSize(),
-                ]);
-
-                $project->documents()->save($document);
-                \Log::info('Documento creado y asociado:', ['project_id' => $project->id, 'document' => $document->toArray()]);
+    
+        \Log::info('Datos validados:', $validatedData);
+    
+        try {
+            // Crea el proyecto con el estado inicial "En evaluación"
+            $project = auth()->user()->projects()->create([
+                'name' => $validatedData['name'],
+                'client_name' => $validatedData['client_name'],
+                'nit' => $validatedData['nit'],
+                'email' => $validatedData['email'],
+                'phone' => $validatedData['phone'],
+                'city' => $validatedData['city'],
+                'department' => $validatedData['department'],
+                'country' => $validatedData['country'],
+                'installation_address' => $validatedData['installation_address'],
+                'project_description' => $validatedData['project_description'],
+                'project_value' => $validatedData['project_value'],
+                'start_date' => $validatedData['start_date'],
+                'status' => 'En evaluación',
+            ]);
+    
+            \Log::info('Proyecto creado:', $project->toArray());
+    
+            // Crea las dos etapas del proyecto
+            $project->stages()->createMany([
+                ['name' => 'Etapa 1: Aprobación', 'status' => 'En revisión', 'tipo' => 'usuario'],
+                ['name' => 'Etapa 2: Financiación', 'status' => 'Pendiente', 'tipo' => 'usuario'],
+            ]);
+    
+            \Log::info('Etapas creadas para el proyecto: ' . $project->id);
+    
+            // Subir y asociar documentos
+            $documentFields = [
+                'rut', 'chamber_of_commerce', 'financial_statements',
+                'legal_representative_id', 'credit_request',
+                'project_information', 'approval_query'
+            ];
+    
+            foreach ($documentFields as $field) {
+                if ($request->hasFile($field)) {
+                    $file = $request->file($field);
+                    $path = $file->store('documents', 'public');
+                    \Log::info('Archivo subido:', ['field' => $field, 'path' => $path]);
+    
+                    // Obtener la extensión del archivo
+                    $extension = $file->getClientOriginalExtension();
+    
+                    // Limpiar el nombre del archivo para la base de datos
+                    $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                    $originalName = preg_replace('/[^a-zA-Z0-9\s]/', '', $originalName);
+                    $originalName = Str::limit($originalName, 100, ''); // Limitar a 100 caracteres
+    
+                    // Añadir la extensión al nombre del archivo que se guardará en la base de datos
+                    $nameForDatabase = $originalName . '.' . $extension;
+    
+                    $document = new Document([
+                        'file_path' => $path,
+                        'name' => $nameForDatabase,
+                        'mime_type' => $file->getMimeType(),
+                        'size' => $file->getSize(),
+                    ]);
+    
+                    $project->documents()->save($document);
+                    \Log::info('Documento creado y asociado:', ['project_id' => $project->id, 'document' => $document->toArray()]);
+                }
             }
+    
+            \Log::info('Documentos creados y asociados al proyecto: ' . $project->id);
+    
+            // Redirigir a la vista de detalles del proyecto
+            return redirect()->route('user.projects.show', $project->id)
+                ->with('success', 'Proyecto creado exitosamente.');
+    
+        } catch (\Exception $e) {
+            \Log::error('Error al crear el proyecto: ' . $e->getMessage());
+            return redirect()->back()->withInput()->with('error', 'Error al crear el proyecto: ' . $e->getMessage());
         }
-
-        // Redirigir a la vista de detalles del proyecto
-        return redirect()->route('user.projects.show', $project->id)
-            ->with('success', 'Proyecto creado exitosamente.');
-
-    } catch (\Exception $e) {
-        \Log::error('Error al crear el proyecto: ' . $e->getMessage());
-        return redirect()->back()->withInput()->with('error', 'Error al crear el proyecto: ' . $e->getMessage());
     }
-}
     
     // ... (resto del controlador: show, edit, update, destroy, approve, reject) ...
 

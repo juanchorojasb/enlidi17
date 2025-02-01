@@ -22,19 +22,19 @@ class StageController extends Controller
      * que el admin pueda ver todas las etapas
      */
     public function index(Request $request)
-    {
-        if (Auth::user()->hasRole('admin')) {
-            // Admin: ver todas las etapas
-            $stages = Stage::with('project')->get();
-            return view('admin.stages.index', compact('stages'));
-        } else {
-            // Usuario: ver solo etapas de sus proyectos
-            $stages = Stage::whereHas('project', function ($q) {
-                $q->where('user_id', Auth::id());
-            })->with('project')->get();
-            return view('user.stages.index', compact('stages'));
-        }
+{
+    if (Auth::user()->hasRole('admin')) {
+        // Admin: ver todas las etapas
+        $stages = Stage::with('project')->get();
+        return view('admin.stages.index', compact('stages'), ['title' => 'Listado de Etapas']); // Añadir la variable $title
+    } else {
+        // Usuario: ver solo etapas de sus proyectos
+        $stages = Stage::whereHas('project', function ($q) {
+            $q->where('user_id', Auth::id());
+        })->with('project')->get();
+        return view('user.stages.index', compact('stages'));
     }
+}
 
     /**
      * Muestra el detalle de una etapa.
@@ -58,7 +58,7 @@ class StageController extends Controller
         }
     
         if (Auth::user()->hasRole('admin')) {
-            return view('admin.stages.show', compact('stage', 'project')); // Vista para administradores
+            return view('admin.stages.show', compact('stage', 'project'), ['title' => 'Detalles de la Etapa']);
         } else {
             return view('user.stages.show', compact('stage', 'project'));
         }

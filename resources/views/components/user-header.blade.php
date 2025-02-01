@@ -96,47 +96,48 @@
                 </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('contact')" :active="request()->routeIs('contact')" class="text-white hover:text-gray-200">
                     {{ __('Contact') }}
-                </x-responsive-nav-link></div>
-
-{{-- Opciones de usuario (responsive) --}}
-@auth
-    <div class="pt-4 pb-1 border-t border-gray-200">
-        <div class="px-4">
-            <div class="font-medium text-base text-white">{{ Auth::user()->name }}</div>
-            <div class="font-medium text-sm text-gray-300">{{ Auth::user()->email }}</div>
-        </div>
-
-        <div class="mt-3 space-y-1">
-            <x-responsive-nav-link :href="route('profile.edit')" class="text-white hover:text-gray-200">
-                {{ __('Profile') }}
-            </x-responsive-nav-link>
-
-            <form method="POST" action="{{ route('logout') }}">
-                @csrf
-
-                <x-responsive-nav-link :href="route('logout')"
-                        onclick="event.preventDefault();
-                                    this.closest('form').submit();" class="text-white hover:text-gray-200">
-                    {{ __('Log Out') }}
                 </x-responsive-nav-link>
-            </form>
-        </div>
-    </div>
-@else
-    <div class="pt-4 pb-4 border-t border-gray-200">
-        <div class="mt-3 space-y-1">
-            <x-responsive-nav-link :href="route('login')" class="text-white hover:text-gray-200">
-                {{ __('Log In') }}
-            </x-responsive-nav-link>
+            </div>
 
-            @if (Route::has('register'))
-                <x-responsive-nav-link :href="route('register')" class="text-white hover:text-gray-200">
-                    {{ __('Register') }}
-                </x-responsive-nav-link>
-            @endif
+            {{-- Opciones de usuario (responsive) --}}
+            @auth
+                <div class="pt-4 pb-1 border-t border-gray-200">
+                    <div class="px-4">
+                        <div class="font-medium text-base text-white">{{ Auth::user()->name }}</div>
+                        <div class="font-medium text-sm text-gray-300">{{ Auth::user()->email }}</div>
+                    </div>
+
+                    <div class="mt-3 space-y-1">
+                        <x-responsive-nav-link :href="route('profile.edit')" class="text-white hover:text-gray-200">
+                            {{ __('Profile') }}
+                        </x-responsive-nav-link>
+
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+
+                            <x-responsive-nav-link :href="route('logout')"
+                                    onclick="event.preventDefault();
+                                                this.closest('form').submit();" class="text-white hover:text-gray-200">
+                                {{ __('Log Out') }}
+                            </x-responsive-nav-link>
+                        </form>
+                    </div>
+                </div>
+            @else
+                <div class="pt-4 pb-4 border-t border-gray-200">
+                    <div class="mt-3 space-y-1">
+                        <x-responsive-nav-link :href="route('login')" class="text-white hover:text-gray-200">
+                            {{ __('Log In') }}
+                        </x-responsive-nav-link>
+
+                        @if (Route::has('register'))
+                            <x-responsive-nav-link :href="route('register')" class="text-white hover:text-gray-200">
+                                {{ __('Register') }}
+                            </x-responsive-nav-link>
+                        @endif
+                    </div>
+                </div>
+            @endauth
         </div>
-    </div>
-@endauth
-</div>
-</nav>
+    </nav>
 </header>
